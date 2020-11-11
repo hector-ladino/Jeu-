@@ -1,17 +1,28 @@
 import pygame, random, sys
 from pygame.locals import *
 
+#sol qui bouge
+
+floor_surface = pygame.image.load('base.png')
+floor_surface = pygame.transform.scale2x(floor_surface)
+floor_x_pos = 0
+def mouv_sol() :
+    windowSurface.blit(floor_surface, (floor_x_pos, 500))
+    windowSurface.blit(floor_surface, (floor_x_pos +600, 500))
+
+
 WINDOWWIDTH = 600
 WINDOWHEIGHT = 600
 TEXTCOLOR = (0, 0, 0)
 BACKGROUNDCOLOR = (255, 255, 255)
 FPS = 60
-BADDIEMINSIZE = 10
-BADDIEMAXSIZE = 40
+BADDIEMINSIZE = 25
+BADDIEMAXSIZE = 50
 BADDIEMINSPEED = 1
-BADDIEMAXSPEED = 8
+BADDIEMAXSPEED = 5
 ADDNEWBADDIERATE = 6
 PLAYERMOVERATE = 5
+PLAYERSIZE = 25
 
 def terminate():
     pygame.quit()
@@ -47,7 +58,7 @@ pygame.display.set_caption('Dodger')
 pygame.mouse.set_visible(False)
 
 # Set up the fonts.
-font = pygame.font.SysFont(None, 48)
+font = pygame.font.SysFont(None,48)
 
 # Set up sounds.
 gameOverSound = pygame.mixer.Sound('gameover.wav')
@@ -163,6 +174,13 @@ while True:
 
         # Draw the game world on the window.
         windowSurface.fill(BACKGROUNDCOLOR)
+
+        # sol en mouvement
+        floor_x_pos -= 1
+        mouv_sol()
+        if floor_x_pos <= -600:
+            floor_x_pos = 0
+
 
         # Draw the score and top score.
         drawText('Score: %s' % (score), font, windowSurface, 10, 0)
