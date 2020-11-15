@@ -1,18 +1,55 @@
 import pygame, random, sys
 from pygame.locals import *
 
+
+
+#jump informations
+isJump = False
+jumpCount = 8
+
+
+#Animation
+RunRight = [pygame.image.load('RR1.png'), pygame.image.load('RR2.png'), pygame.image.load('RR3.png'), pygame.image.load('RR4.png'), pygame.image.load('RR5.png'), pygame.image.load('RR6.png'), pygame.image.load('RR7.png'), pygame.image.load('RR8.png'), pygame.image.load('RR9.png'),pygame.image.load('RR10.png'),pygame.image.load('RR11.png')]
+RunLeft = [pygame.image.load('RL1.png'), pygame.image.load('RL2.png'), pygame.image.load('RL3.png'), pygame.image.load('RL4.png'), pygame.image.load('RL5.png'), pygame.image.load('RL6.png'), pygame.image.load('RL7.png'), pygame.image.load('RL8.png'), pygame.image.load('RL9.png'),pygame.image.load('RL10.png'),pygame.image.load('RL11.png')]
+bg = pygame.image.load('bg.jpg')
+bg = pygame.transform.scale2x(bg)
+x = 20
+y = 10
+
+#Animations info
+walkCount = 0
+
+#playermoves
+
+def redrawGameWindow():
+    global walkCount
+    windowSurface.blit(bg, (0, 0))
+    if walkCount + 1 >= 33:
+        walkCount = 0
+
+    if moveLeft:
+        windowSurface.blit(RunLeft[walkCount // 3], (x, y))
+        walkCount += 1
+    elif moveRight:
+        windowSurface.blit(RunRight[walkCount // 3], (x, y))
+        walkCount += 1
+    else:
+        windowSurface.blit(playerImage, (x, y))
+
+    pygame.display.update()
+
+
 #sol qui bouge
+#floor_surface = pygame.image.load('base.png')
+#floor_surface = pygame.transform.scale2x(floor_surface)
+#floor_x_pos = 0
+#def mouv_sol() :
+    #windowSurface.blit(floor_surface, (floor_x_pos, 500))
+    #windowSurface.blit(floor_surface, (floor_x_pos +600, 500))
 
-floor_surface = pygame.image.load('base.png')
-floor_surface = pygame.transform.scale2x(floor_surface)
-floor_x_pos = 0
-def mouv_sol() :
-    windowSurface.blit(floor_surface, (floor_x_pos, 500))
-    windowSurface.blit(floor_surface, (floor_x_pos +600, 500))
 
-
-WINDOWWIDTH = 600
-WINDOWHEIGHT = 600
+WINDOWWIDTH = 900
+WINDOWHEIGHT = 700
 TEXTCOLOR = (0, 0, 0)
 BACKGROUNDCOLOR = (255, 255, 255)
 FPS = 60
@@ -21,8 +58,13 @@ BADDIEMAXSIZE = 50
 BADDIEMINSPEED = 0
 BADDIEMAXSPEED = 0
 ADDNEWBADDIERATE = 6
-PLAYERMOVERATE = 5
-PLAYERSIZE = 25
+PLAYERMOVERATE = 10
+#character informations
+x = 5
+y = 20
+width = 64
+height = 64
+vel = 10
 
 def terminate():
     pygame.quit()
@@ -55,7 +97,7 @@ pygame.init()
 mainClock = pygame.time.Clock()
 windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 pygame.display.set_caption('coronascape')
-pygame.mouse.set_visible(False)
+
 
 # Set up the fonts.
 font = pygame.font.SysFont(None,48)
@@ -65,7 +107,7 @@ gameOverSound = pygame.mixer.Sound('gameover.wav')
 pygame.mixer.music.load('background.mid')
 
 # Set up images.
-playerImage = pygame.image.load('player.png')
+playerImage = pygame.image.load('Standing.png')
 playerRect = playerImage.get_rect()
 baddieImage = pygame.image.load('virus.png')
 
@@ -94,47 +136,40 @@ while True:
             if event.type == QUIT:
                 terminate()
 
-            if event.type == KEYDOWN:
-                if event.key == K_z:
-                    reverseCheat = True
-                if event.key == K_x:
-                    slowCheat = True
-                if event.key == K_LEFT or event.key == K_a:
-                    moveRight = False
-                    moveLeft = True
-                if event.key == K_RIGHT or event.key == K_d:
-                    moveLeft = False
-                    moveRight = True
-                if event.key == K_UP or event.key == K_w:
-                    moveDown = False
-                    moveUp = True
-                if event.key == K_DOWN or event.key == K_s:
-                    moveUp = False
-                    moveDown = True
+        keys = pygame.key.get_pressed()
 
-            if event.type == KEYUP:
-                if event.key == K_z:
-                    reverseCheat = False
-                    score = 0
-                if event.key == K_x:
-                    slowCheat = False
-                    score = 0
-                if event.key == K_ESCAPE:
-                        terminate()
+        if keys[pygame.K_LEFT] and x > PLAYERMOVERATE:
+            x -= PLAYERMOVERATE
+            moveLeft = True
+            moveRight = False
+        elif keys[pygame.K_RIGHT] and x < 900 - width - PLAYERMOVERATE:
+            x += PLAYERMOVERATE
+            moveLeft = False
+            moveRight = True
 
-                if event.key == K_LEFT or event.key == K_a:
-                    moveLeft = False
-                if event.key == K_RIGHT or event.key == K_d:
-                    moveRight = False
-                if event.key == K_UP or event.key == K_w:
-                    moveUp = False
-                if event.key == K_DOWN or event.key == K_s:
-                    moveDown = False
+        else:
+            moveRight = False
+            moveLeft = False
+            walkCount = 0
 
-            if event.type == MOUSEMOTION:
-                # If the mouse moves, move the player where to the cursor.
-                playerRect.centerx = event.pos[0]
-                playerRect.centery = event.pos[1]
+        if not (isJump):
+            if keys[pygame.K_UP]:
+                isJump = True
+                moveRight = False
+                left = False
+                walkCount = 0
+        else:
+            if jumpCount >= -8:
+                neg = 1
+                if jumpCount < 0:
+                    neg = -1
+                y -= (jumpCount ** 2) * 0.5 * neg
+                jumpCount -= 1
+
+            else:
+                isJump = False
+                jumpCount = 8
+
         # Add new baddies at the top of the screen, if needed.
         if not reverseCheat and not slowCheat:
             baddieAddCounter += 1
@@ -148,15 +183,7 @@ while True:
 
             baddies.append(newBaddie)
 
-        # Move the player around.
-        if moveLeft and playerRect.left > 0:
-            playerRect.move_ip(-1 * PLAYERMOVERATE, 0)
-        if moveRight and playerRect.right < WINDOWWIDTH:
-            playerRect.move_ip(PLAYERMOVERATE, 0)
-        if moveUp and playerRect.top > 0:
-            playerRect.move_ip(0, -1 * PLAYERMOVERATE)
-        if moveDown and playerRect.bottom < WINDOWHEIGHT:
-            playerRect.move_ip(0, PLAYERMOVERATE)
+        redrawGameWindow()
 
         # Move the baddies down.
         for b in baddies:
@@ -172,14 +199,13 @@ while True:
             if b['rect'].top > WINDOWHEIGHT:
                 baddies.remove(b)
 
-        # Draw the game world on the window.
-        windowSurface.fill(BACKGROUNDCOLOR)
+
 
         # sol en mouvement
-        floor_x_pos -= 1
-        mouv_sol()
-        if floor_x_pos <= -600:
-            floor_x_pos = 0
+       #floor_x_pos -= 1
+        #mouv_sol()
+        #if floor_x_pos <= -600:
+            #floor_x_pos = 0
 
 
         # Draw the score and top score.
@@ -201,7 +227,7 @@ while True:
                 topScore = score # set new top score
             break
 
-        mainClock.tick(FPS)
+        mainClock.tick(60)
 
     # Stop the game and show the "Game Over" screen.
     pygame.mixer.music.stop()
@@ -213,3 +239,4 @@ while True:
     waitForPlayerToPressKey()
 
     gameOverSound.stop()
+
