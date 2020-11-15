@@ -18,8 +18,8 @@ BACKGROUNDCOLOR = (255, 255, 255)
 FPS = 60
 BADDIEMINSIZE = 25
 BADDIEMAXSIZE = 50
-BADDIEMINSPEED = 1
-BADDIEMAXSPEED = 5
+BADDIEMINSPEED = 0
+BADDIEMAXSPEED = 0
 ADDNEWBADDIERATE = 6
 PLAYERMOVERATE = 5
 PLAYERSIZE = 25
@@ -54,7 +54,7 @@ def drawText(text, font, surface, x, y):
 pygame.init()
 mainClock = pygame.time.Clock()
 windowSurface = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
-pygame.display.set_caption('Dodger')
+pygame.display.set_caption('coronascape')
 pygame.mouse.set_visible(False)
 
 # Set up the fonts.
