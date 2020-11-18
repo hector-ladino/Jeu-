@@ -9,7 +9,7 @@ jumpCount = 8
 
 
 #Animation
-RunRight = [pygame.transform.scale(pygame.image.load('RR1.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR2.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR3.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR4.png'), (233,160)), pygame.image.load('RR5.png'), pygame.image.load('RR6.png'), pygame.image.load('RR7.png'), pygame.image.load('RR8.png'), pygame.image.load('RR9.png'),pygame.image.load('RR10.png'),pygame.image.load('RR11.png')]
+RunRight = [pygame.transform.scale(pygame.image.load('RR1.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR2.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR3.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR4.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR5.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR6.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR7.png'), (233,160)), pygame.image.load('RR8.png'), pygame.image.load('RR9.png'),pygame.image.load('RR10.png'),pygame.image.load('RR11.png')]
 RunLeft = [pygame.image.load('RL1.png'), pygame.image.load('RL2.png'), pygame.image.load('RL3.png'), pygame.image.load('RL4.png'), pygame.image.load('RL5.png'), pygame.image.load('RL6.png'), pygame.image.load('RL7.png'), pygame.image.load('RL8.png'), pygame.image.load('RL9.png'),pygame.image.load('RL10.png'),pygame.image.load('RL11.png')]
 
 bg = pygame.image.load('bg.jpg')
