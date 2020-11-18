@@ -1,6 +1,9 @@
 import pygame
 pygame. init()
 
+
+#Animation
+RunRight = [pygame.transform.scale(pygame.image.load('RR1.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR2.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR3.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR4.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR5.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR6.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR7.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR8.png'), (233,160)), pygame.transform.scale(pygame.image.load('RR9.png'), (233,160)),pygame.transform.scale(pygame.image.load('RR10.png'), (233,160)),pygame.transform.scale(pygame.image.load('RR11.png'), (233,160))]
 #arrière plan du jeu
 fond = pygame.image.load('bg4.png')
 
