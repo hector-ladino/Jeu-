@@ -13,7 +13,7 @@ walkCount = 0
 
 #jump info
 isJump = False
-jumpCount = 8
+jumpCount = 13
 
 #arrière plan du jeu
 fond = pygame.image.load('bg4.png')
@@ -24,8 +24,8 @@ joueur = pygame.transform.scale(pygame.image.load('Standing.png'), (233,160))
 #joueur informations
 x = 100
 y = 300
-width = 233
-height = 160
+width = 160
+height = 233
 vit = 10
 #fenêtre du jeu
 pygame.display.set_caption("notre jeu")
@@ -36,10 +36,10 @@ fenetre = pygame.display.set_mode((1200, 600))
 fps = pygame.time.Clock()
 #movement fond
 fond_x_pos = 0
-def mov_fond():
+def dupli_fond():
     fenetre.blit(fond, (fond_x_pos,0))
     fenetre.blit(fond,(fond_x_pos+600,0))
-    fenetre.blit(fond,(fond_x_pos+1200,0))
+
 
 #Animation du personnage
 def redrawGameWindow():
@@ -88,33 +88,35 @@ while run:
         right = False
         left = False
         walkCount = 0
+
+    #saut
+
     if not (isJump):
         if keys[pygame.K_UP]:
             isJump = True
             right = False
             left = False
-            walkCount  = 0
+            walkCount = 0
     else:
-         if jumpCount >= -8:
+         if jumpCount >= -13:
             neg = 1
             if jumpCount < 0:
                 neg = -1
-            y-= (jumpCount ** 2) * 0.5 * neg
+            y -= (jumpCount ** 2 ) * 0.2 * neg
             jumpCount -= 1
          else:
             isJump = False
-            jumpCount = 8
+            jumpCount = 13
 
 
-
+    #Animation
     redrawGameWindow()
 
 
     #movement fond
-    fond_x_pos -= 5
-    mov_fond()
-    if fond_x_pos <= -600:
-        fond_x_pos = 0
+
+    dupli_fond()
+
 
 
 
