@@ -59,6 +59,16 @@ def redrawGameWindow():
 
     pygame.display.update()
 
+
+class boule de neige(object):
+    boule = pygame.image.load(snowbal)
+
+
+
+class boule de neige(object):
+    boule = pygame.image.load(snowba)
+
+
 run = True
 
 #main loop
