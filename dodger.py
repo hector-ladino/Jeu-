@@ -57,13 +57,13 @@ BACKGROUNDCOLOR = (255, 255, 255)
 FPS = 60
 BADDIEMINSIZE = 25
 BADDIEMAXSIZE = 50
-BADDIEMINSPEED = 0
-BADDIEMAXSPEED = 0
-ADDNEWBADDIERATE = 6
+BADDIEMINSPEED = 2
+BADDIEMAXSPEED = 6
+ADDNEWBADDIERATE = 19
 PLAYERMOVERATE = 10
 #character informations
 x = 5
-y = 20
+y = 300
 width = 64
 height = 64
 vel = 10
@@ -105,13 +105,12 @@ pygame.display.set_caption('coronascape')
 font = pygame.font.SysFont(None,48)
 
 # Set up sounds.
-gameOverSound = pygame.mixer.Sound('gameover.wav')
-pygame.mixer.music.load('background.mid')
+
 
 # Set up images.
-playerImage = pygame.image.load('Standing.png')
+playerImage = pygame.transform.scale(pygame.image.load('Standing.png'), (233,160))
 playerRect = playerImage.get_rect()
-baddieImage = pygame.image.load('virus.png')
+baddieImage = pygame.image.load('méchant.png')
 
 # Show the "Start" screen.
 windowSurface.fill(BACKGROUNDCOLOR)
@@ -129,7 +128,7 @@ while True:
     moveLeft = moveRight = moveUp = moveDown = False
     reverseCheat = slowCheat = False
     baddieAddCounter = 0
-    pygame.mixer.music.play(-1, 0.0)
+
 
     while True: # The game loop runs while the game part is playing.
         score += 1 # Increase score.
@@ -178,7 +177,7 @@ while True:
         if baddieAddCounter == ADDNEWBADDIERATE:
             baddieAddCounter = 0
             baddieSize = random.randint(BADDIEMINSIZE, BADDIEMAXSIZE)
-            newBaddie = {'rect': pygame.Rect(random.randint(0, WINDOWWIDTH - baddieSize), 0 - baddieSize, baddieSize, baddieSize),
+            newBaddie = {'rect': pygame.Rect(WINDOWWIDTH + baddieSize,random.randint(0, WINDOWWIDTH - baddieSize), baddieSize, baddieSize),
                         'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
                         'surface':pygame.transform.scale(baddieImage, (baddieSize, baddieSize)),
                         }
@@ -190,11 +189,11 @@ while True:
         # Move the baddies down.
         for b in baddies:
             if not reverseCheat and not slowCheat:
-                b['rect'].move_ip(0, b['speed'])
+                b['rect'].move_ip(-b['speed'], 0)
             elif reverseCheat:
-                b['rect'].move_ip(0, -5)
+                b['rect'].move_ip(0, 0)
             elif slowCheat:
-                b['rect'].move_ip(0, 1)
+                b['rect'].move_ip(2, 1)
 
         # Delete baddies that have fallen past the bottom.
         for b in baddies[:]:
@@ -232,13 +231,11 @@ while True:
         mainClock.tick(60)
 
     # Stop the game and show the "Game Over" screen.
-    pygame.mixer.music.stop()
-    gameOverSound.play()
+
 
     drawText('GAME OVER', font, windowSurface, (WINDOWWIDTH / 3), (WINDOWHEIGHT / 3))
     drawText('Press a key to play again.', font, windowSurface, (WINDOWWIDTH / 3) - 80, (WINDOWHEIGHT / 3) + 50)
     pygame.display.update()
     waitForPlayerToPressKey()
 
-    gameOverSound.stop()
 
