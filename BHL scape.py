@@ -27,7 +27,7 @@ RunLeft = [pygame.transform.scale(pygame.image.load('RL1.png'), (233, 160)),
            pygame.transform.scale(pygame.image.load('RL10.png'), (233, 160)),
            pygame.transform.scale(pygame.image.load('RL11.png'), (233, 160))]
 
-playerRect = joueur and RunLeft and RunRight.get_rect()
+
 
 
 
