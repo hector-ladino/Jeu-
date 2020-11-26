@@ -31,15 +31,16 @@ RunLeft = [pygame.transform.scale(pygame.image.load('RL1.png'), (233, 160)),
 
 
 
-
+playerRect = joueur.get_rect()
 #arrière plan du jeu
 fond = pygame.image.load('bg4.png')
 
 #fenêtre du jeu
 pygame.display.set_caption("notre jeu")
-fenetre = pygame.display.set_mode((1200, 600))
 fenetre_width = 1200
 fenetre_height = 600
+fenetre = pygame.display.set_mode((fenetre_width, fenetre_height))
+
 
 #FPS
 fps = pygame.time.Clock()
@@ -76,6 +77,7 @@ class player(object):
             self.walkCount += 1
         else:
             fenetre.blit(joueur, (self.x, self.y))
+
 
 #méchante boule de neige
 class bouledeneige(object):
@@ -120,40 +122,32 @@ class bouledeneige(object):
 #méchant monstre
 class méchants (object):
     méchant = pygame.transform.scale(pygame.image.load("méchant.png"), (117, 193))
-    playerRect = joueur.get_rect()
-    def __init__(self, x, y, width, height, end):
+    def __init__(self, x,y):
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
-        self.end = end
-        self.path = [self.x, self.end]
-        self.walkCount = 0
+        self.baddieSize = self.méchant
         self.max_vit = 4
         self.min_vit = 1
         self.addméchantrate = 5
 
-    def playerHasHitBaddie(playerRect, baddies):
-        for b in baddies:
-            if playerRect.colliderect(b['rect']):
-                return True
-        return False
 
     def draw(self, fenetre):
+        global baddieAddCounter
         if not reverseCheat and not slowCheat:
             baddieAddCounter += 1
         if baddieAddCounter == self.addméchantrate:
             baddieAddCounter = 0
-            méchantsize = méchant
+            méchantsize = self.méchant
             newBaddie = {'rect': pygame.Rect(fenetre_width + méchantsize, random.randint(0, fenetre_width - méchantsize), méchantsize, méchantsize),
                         'speed': random.randint(self.min_vit, self.max_vit),
-                        'surface':pygame.transform.scale(méchant, (méchantsize, méchantsize)),
-                        }
+                        'surface':pygame.transform.scale(méchant, (méchantsize, méchantsize)),}
 
             baddies.append(newBaddie)
 
+
     def move(self):
         for b in baddies:
+            fenetre.blit(self.méchant,(b['surface'], b["rect"]))
             if not reverseCheat and not slowCheat:
                 b['rect'].move_ip(-b['speed'], 0)
             elif reverseCheat:
@@ -170,13 +164,13 @@ class méchants (object):
 def redrawGameWindow():
     pnoel.draw(fenetre)
     b2neige.draw(fenetre)
-    méchant.draw(fenetre)
+    vilain.draw(fenetre)
     pygame.display.update()
 
 #instances
 pnoel = player(100, 300, 160, 233)
 b2neige = bouledeneige(1, 300, 100, 100, 1200)
-méchant = méchants(100, 300, 160, 233)
+vilain = méchants(100, 300)
 
 
 run = True
@@ -244,7 +238,7 @@ while run:
     #movement fond
 
     dupli_fond()
-
+méchant = baddies()
 
 
 
