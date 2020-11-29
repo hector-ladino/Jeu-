@@ -1,6 +1,6 @@
 from jeu import Jeu
-import pygame, sys
-from pygame.locals import *
+import pygame
+import math
 
 pygame. init()
 
@@ -12,9 +12,9 @@ pygame.display.set_caption("notre jeu")
 fenetre = pygame.display.set_mode((1200, 600))
 
 #création d'un écran start
-banner = pygame.transform.scale(pygame.image.load('snowball.png'), (300,200))
+banner = pygame.transform.scale(pygame.image.load('start.jpg'), (300,200))
 banner_rect = banner.get_rect()
-banner_rect.x = fenetre.get_width()/2.5
+banner_rect.x = math.ceil(fenetre.get_width()/2.5)
 banner_rect.y = fenetre.get_height()/4
 
 
@@ -35,7 +35,7 @@ run = True
 #main loop
 while run:
     # fps
-    fps.tick(60)
+    fps.tick(30)
     #fond
     dupli_fond()
 
@@ -62,6 +62,10 @@ while run:
         elif event.type == pygame.KEYUP:
             jeu.pressed[event.key] = False
 
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if banner_rect.collidepoint(event.pos):
+                #lancer le jeu
+               jeu.start()
 
 
 

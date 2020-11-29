@@ -16,22 +16,26 @@ class Jeu:
 
         #plusieurs méchants
         self.les_monstres = pygame.sprite.Group()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-
-
         self.pressed = {}
+
+    def start(self):
+        self.is_playing = True
+        self.spawn_monster()
+        self.spawn_monster()
+        self.spawn_monster()
+        self.spawn_monster()
+        self.spawn_monster()
+        self.spawn_monster()
+        self.spawn_monster()
+        self.spawn_monster()
+        self.spawn_monster()
+
+
+    def game_over(self):
+        #reinitialisation du jeu
+        self.les_monstres = pygame.sprite.Group()
+        self.player.health = self.player.max_health
+        self.is_playing = False
 
     def actualiser(self, fenetre):
         fenetre.blit(self.player.image, self.player.rect)
@@ -46,11 +50,11 @@ class Jeu:
         self.les_monstres.draw(fenetre)
 
         # commande joueur
-        if self.pressed.get(pygame.K_RIGHT) and self.player.rect.x + self.player.width < fenetre.width:
+        if self.pressed.get(pygame.K_RIGHT) and self.player.rect.x + self.player.width < fenetre.get_width():
             self.player.move_right()
         elif self.pressed.get(pygame.K_LEFT) and self.player.rect.x > 0:
             self.player.move_left()
-        if self.pressed.get(pygame.K_DOWN) and self.player.rect.y + self.player.height + 70 < fenetre.height:
+        if self.pressed.get(pygame.K_DOWN) and self.player.rect.y + self.player.height + 70 < fenetre.get_height():
             self.player.move_down()
 
     def check_ifhit(self, sprite, group):
