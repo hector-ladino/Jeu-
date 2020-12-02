@@ -12,8 +12,6 @@ class Jeu:
         self.les_joueurs = pygame.sprite.Group()
         self.player = player(self)
         self.les_joueurs.add(self.player)
-
-
         #plusieurs méchants
         self.les_monstres = pygame.sprite.Group()
         self.pressed = {}

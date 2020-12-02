@@ -19,6 +19,7 @@ class player(pygame.sprite.Sprite):
         self.jump = False
         self.image = pygame.transform.scale(pygame.image.load('Standing.png'), (233, 160))
         self.rect = self.image.get_rect()
+        self.attack = 1
         self.RunRight = [pygame.transform.scale(pygame.image.load('RR1.png'), (233, 160)),
                     pygame.transform.scale(pygame.image.load('RR2.png'), (233, 160)),
                     pygame.transform.scale(pygame.image.load('RR3.png'), (233, 160)),
@@ -63,11 +64,11 @@ class player(pygame.sprite.Sprite):
     def move_right(self):
         #joueur ne touche pas un monstre
         if not self.jeu.check_ifhit(self, self.jeu.les_monstres):
-            self.rect.x += self.vit
+            self.rect.x += self.vit_x
             self.right = True
             self.left = False
     def move_left(self):
-        self.rect.x -= self.vit
+        self.rect.x -= self.vit_x
         self.right = False
         self.left = True
 

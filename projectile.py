@@ -25,6 +25,13 @@ class Projectile (pygame.sprite.Sprite):
         self.rect.x += self.vit
         self.rotation()
 
+        #voir si le projectile touche un monstre
+        for monster in self.player.jeu.check_ifhit(self, self.player.jeu.les_monstres):
+            #si c'est vrai alors on supprime le projectile
+            self.remove()
+            #infliger degats
+            monster.degats(self.player.attack)
+
         #projectile plus présent sur l'écran
 
         if self.rect.x > 1200:
