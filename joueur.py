@@ -12,9 +12,10 @@ class player(pygame.sprite.Sprite):
         self.max_health = 100
         self.width = 160
         self.height = 233
-        self.vit = 10
+        self.vit_x = 10
+        self.vit_y = 10
         self.jumpHeight = 10
-        self.isJump = False
+        self.jump = False
         self.image = pygame.transform.scale(pygame.image.load('Standing.png'), (233, 160))
         self.rect = self.image.get_rect()
         self.RunRight = [pygame.transform.scale(pygame.image.load('RR1.png'), (233, 160)),

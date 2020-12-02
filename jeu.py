@@ -50,12 +50,29 @@ class Jeu:
         self.les_monstres.draw(fenetre)
 
         # commande joueur
-        if self.pressed.get(pygame.K_RIGHT) and self.player.rect.x + self.player.width < fenetre.get_width():
-            self.player.move_right()
-        elif self.pressed.get(pygame.K_LEFT) and self.player.rect.x > 0:
-            self.player.move_left()
-        if self.pressed.get(pygame.K_DOWN) and self.player.rect.y + self.player.height + 70 < fenetre.get_height():
-            self.player.move_down()
+
+        if self.pressed.get(pygame.K_LEFT) and self.player.rect.x > self.player.vit_x:
+            self.player.rect.x -= self.player.vit_x
+        if self.pressed.get(pygame.K_RIGHT) and self.player.rect.x < 1200 - self.player.width - self.player.vit_x:
+            self.player.rect.x += self.player.vit_x
+
+        if self.player.jump is False and self.pressed.get(pygame.K_UP):
+            self.player.jump = True
+
+        if self.player.jump is True:
+            self.player.rect.y -= self.player.vit_y*4 #augmenter ou diminuer la hauteur du saut
+            self.player.vit_y -= 1
+            if self.player.vit_y < -10:
+                self.player.jump = False
+                self.player.vit_y = 10
+
+
+
+
+
+
+
+
 
     def check_ifhit(self, sprite, group):
         return pygame.sprite.spritecollide(sprite, group, False, pygame.sprite.collide_mask)
