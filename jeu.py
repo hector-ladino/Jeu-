@@ -67,13 +67,6 @@ class Jeu:
                 self.player.vit_y = 10
 
 
-
-
-
-
-
-
-
     def check_ifhit(self, sprite, group):
         return pygame.sprite.spritecollide(sprite, group, False, pygame.sprite.collide_mask)
 
