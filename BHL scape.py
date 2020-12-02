@@ -39,6 +39,13 @@ while run:
     #fond
     dupli_fond()
 
+    #récupérer les projectiles du joueur
+    for projectile in jeu.player.all_projectiles:
+        projectile.move()
+
+    #appliquer l'ensemble des images du groupe projectile
+    jeu.player.all_projectiles.draw(fenetre)
+
     #gamestarting
     if jeu.is_playing:
         jeu.actualiser(fenetre)
@@ -58,6 +65,10 @@ while run:
     # le joueur presse une touche
         elif event.type == pygame.KEYDOWN:
             jeu.pressed[event.key] = True
+
+            #détecter la touche espace enclanchée
+            if event.key == pygame.K_SPACE:
+                jeu.player.lancer_projectile()
 
         elif event.type == pygame.KEYUP:
             jeu.pressed[event.key] = False

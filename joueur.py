@@ -1,6 +1,6 @@
 import time
 import pygame
-
+from projectile import Projectile
 
 # classe representant notre joueur
 class player(pygame.sprite.Sprite):
@@ -14,6 +14,7 @@ class player(pygame.sprite.Sprite):
         self.height = 233
         self.vit_x = 10
         self.vit_y = 10
+        self.all_projectiles = pygame.sprite.Group()
         self.jumpHeight = 10
         self.jump = False
         self.image = pygame.transform.scale(pygame.image.load('Standing.png'), (233, 160))
@@ -43,7 +44,8 @@ class player(pygame.sprite.Sprite):
         self.rect.x = 100
         self.rect.y = 300
 
-
+    def lancer_projectile(self):
+        self.all_projectiles.add(Projectile(self))
 
     def damage(self, amount):
         if self.health - amount > amount:
