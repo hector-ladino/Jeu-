@@ -21,7 +21,20 @@ banner_rect.y = fenetre.get_height()/4
 #FPS
 fps = pygame.time.Clock()
 #movement fond
+#sol qui bouge
+floor_surface = pygame.transform.scale(pygame.image.load('ground.PNG'), (1200,160))
+
+
+floor_x_pos = 0
+
 fond_x_pos = 0
+
+def mouv_sol() :
+    fenetre.blit(floor_surface, (floor_x_pos, 440))
+    fenetre.blit(floor_surface, (floor_x_pos +600, 440))
+    fenetre.blit(floor_surface, (floor_x_pos + 1200, 440))
+
+
 def dupli_fond():
     fenetre.blit(fond, (fond_x_pos,0))
     fenetre.blit(fond,(fond_x_pos+600,0))
@@ -35,9 +48,15 @@ run = True
 #main loop
 while run:
     # fps
-    fps.tick(30)
+    fps.tick(60)
     #fond
     dupli_fond()
+
+    # movement fond
+    floor_x_pos -= 1
+    mouv_sol()
+    if floor_x_pos <= -600:
+        floor_x_pos = 0
 
     #récupérer les projectiles du joueur
     for projectile in jeu.player.all_projectiles:
@@ -79,10 +98,6 @@ while run:
                jeu.start()
 
 
-
-    #movement fond
-
-    dupli_fond()
 
 
 
