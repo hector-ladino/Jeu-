@@ -12,10 +12,23 @@ pygame.display.set_caption("notre jeu")
 fenetre = pygame.display.set_mode((1200, 600))
 
 #création d'un écran start
-banner = pygame.transform.scale(pygame.image.load('noel.png'), (300,200))
+banner = pygame.transform.scale(pygame.image.load('noel.png'), (700,400))
 banner_rect = banner.get_rect()
-banner_rect.x = math.ceil(fenetre.get_width()/2.5)
-banner_rect.y = fenetre.get_height()/4
+banner_rect.x = math.ceil(fenetre.get_width()/4.7)
+banner_rect.y = math.ceil(fenetre.get_height()/5.4)
+
+#bouton pour lancer partie
+play_bouton = pygame.transform.scale(pygame.image.load('start.png'), (200, 60))
+play_bouton_rect = play_bouton.get_rect()
+play_bouton_rect.x = math.ceil(fenetre.get_width()/3.15)
+play_bouton_rect.y = math.ceil(fenetre.get_height()/1.4)
+
+#bouton pour savoir comment jouer
+tuto_bouton = pygame.transform.scale(pygame.image.load('howtoplay.png'), (200, 60))
+tuto_bouton_rect = tuto_bouton.get_rect()
+tuto_bouton_rect.x = math.ceil(fenetre.get_width()/1.95)
+tuto_bouton_rect.y = math.ceil(fenetre.get_height()/1.4)
+
 
 
 #FPS
@@ -98,6 +111,8 @@ while run:
 
     else:
         fenetre.blit(banner, banner_rect)
+        fenetre.blit(play_bouton, play_bouton_rect)
+        fenetre.blit(tuto_bouton, tuto_bouton_rect)
 
 
     #mettre a jour l'écran
@@ -121,15 +136,12 @@ while run:
             if event.key == pygame.K_SPACE:
                 jeu.player.lancer_projectile()
 
-
-
         elif event.type == pygame.KEYUP:
             jeu.pressed[event.key] = False
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if banner_rect.collidepoint(event.pos):
-                #lancer le jeu
-               jeu.start()
+            if play_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton start
+                jeu.start()
 
 
 
