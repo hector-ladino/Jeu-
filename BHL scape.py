@@ -98,6 +98,8 @@ while run:
 
     else:
         fenetre.blit(banner, banner_rect)
+        fenetre.blit(play_bouton, play_bouton_rect)
+
 
 
     #mettre a jour l'écran
