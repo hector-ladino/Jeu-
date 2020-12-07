@@ -30,9 +30,9 @@ floor_x_pos = 0
 fond_x_pos = 0
 
 def mouv_sol() :
-    fenetre.blit(floor_surface, (floor_x_pos, 440))
-    fenetre.blit(floor_surface, (floor_x_pos +600, 440))
-    fenetre.blit(floor_surface, (floor_x_pos + 1200, 440))
+    fenetre.blit(floor_surface, (floor_x_pos, 443))
+    fenetre.blit(floor_surface, (floor_x_pos +600, 443))
+    fenetre.blit(floor_surface, (floor_x_pos + 1200, 443))
 
 
 def dupli_fond():
@@ -41,10 +41,10 @@ def dupli_fond():
 
 
 #bloc de glace
-bloc_surface = pygame.image.load('brique.png')
+bloc_surface = pygame.transform.scale(pygame.image.load('brique.png'), (200,400))
 bloc_list = []
 SPAWNBLOC = pygame.USEREVENT
-pygame.time.set_timer(SPAWNBLOC,1200)
+pygame.time.set_timer(SPAWNBLOC,4000)
 
 def create_bloc():
     new_bloc = bloc_surface.get_rect(midtop = (1250,200))
@@ -67,9 +67,11 @@ run = True
 while run:
     # fps
     fps.tick(30)
+
     #fond
     dupli_fond()
 
+    bloc_list = move_bloc(bloc_list)
 
 
     #récupérer les projectiles du joueur
@@ -81,12 +83,10 @@ while run:
 
     #gamestarting
     if jeu.is_playing:
+        draw_bloc(bloc_list)
         jeu.actualiser(fenetre)
-        # movement fond
-        floor_x_pos -= 1
-        mouv_sol()
-        if floor_x_pos <= -600:
-            floor_x_pos = 0
+
+
 
 
 
@@ -98,6 +98,11 @@ while run:
     pygame.display.flip()
     #fermer fenetre
     for event in pygame.event.get():
+        # bloc
+        if event.type == SPAWNBLOC:
+            bloc_list.append(create_bloc())
+
+
         #fermeture de fenetre
         if event.type == pygame.QUIT:
             run = False
@@ -110,6 +115,8 @@ while run:
             if event.key == pygame.K_SPACE:
                 jeu.player.lancer_projectile()
 
+
+
         elif event.type == pygame.KEYUP:
             jeu.pressed[event.key] = False
 
@@ -118,6 +125,11 @@ while run:
                 #lancer le jeu
                jeu.start()
 
+     # movement fond
+            floor_x_pos -= 1
+            mouv_sol()
+            if floor_x_pos <= -600:
+                floor_x_pos = 0
 
 
 
