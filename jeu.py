@@ -6,7 +6,7 @@ import random
 # class qui représente le jeu
 class Jeu:
     def __init__(self):
-        #start
+        #jeu start ou non
         self.is_playing = False
         #joueur
         self.les_joueurs = pygame.sprite.Group()
