@@ -12,16 +12,10 @@ pygame.display.set_caption("notre jeu")
 fenetre = pygame.display.set_mode((1200, 600))
 
 #création d'un écran start
-banner = pygame.transform.scale(pygame.image.load('noel.png'), (700,400))
+banner = pygame.transform.scale(pygame.image.load('noel.png'), (300,200))
 banner_rect = banner.get_rect()
-banner_rect.x = math.ceil(fenetre.get_width()/4.5)
-banner_rect.y = math.ceil(fenetre.get_height()/6)
-
-#bouton pour lancer partie
-play_bouton = pygame.transform.scale(pygame.image.load('start.png'), (200, 60))
-play_bouton_rect = play_bouton.get_rect()
-play_bouton_rect.x = math.ceil(fenetre.get_width()/2.23)
-play_bouton_rect.y = math.ceil(fenetre.get_height()/1.5)
+banner_rect.x = math.ceil(fenetre.get_width()/2.5)
+banner_rect.y = fenetre.get_height()/4
 
 
 #FPS
@@ -36,9 +30,9 @@ floor_x_pos = 0
 fond_x_pos = 0
 
 def mouv_sol() :
-    fenetre.blit(floor_surface, (floor_x_pos, 443))
-    fenetre.blit(floor_surface, (floor_x_pos +600, 443))
-    fenetre.blit(floor_surface, (floor_x_pos + 1200, 443))
+    fenetre.blit(floor_surface, (floor_x_pos, 441))
+    fenetre.blit(floor_surface, (floor_x_pos +600, 441))
+    fenetre.blit(floor_surface, (floor_x_pos + 1200, 441))
 
 
 def dupli_fond():
@@ -90,6 +84,12 @@ while run:
     #gamestarting
     if jeu.is_playing:
         draw_bloc(bloc_list)
+        # movement fond
+        floor_x_pos -= 1
+        mouv_sol()
+        if floor_x_pos <= -600:
+            floor_x_pos = 0
+
         jeu.actualiser(fenetre)
 
 
@@ -98,8 +98,6 @@ while run:
 
     else:
         fenetre.blit(banner, banner_rect)
-        fenetre.blit(play_bouton, play_bouton_rect)
-
 
 
     #mettre a jour l'écran
@@ -133,11 +131,6 @@ while run:
                 #lancer le jeu
                jeu.start()
 
-     # movement fond
-            floor_x_pos -= 1
-            mouv_sol()
-            if floor_x_pos <= -600:
-                floor_x_pos = 0
 
 
 
