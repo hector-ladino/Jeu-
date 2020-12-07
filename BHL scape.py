@@ -40,6 +40,24 @@ def dupli_fond():
     fenetre.blit(fond,(fond_x_pos+600,0))
 
 
+#bloc de glace
+bloc_surface = pygame.image.load('brique.png')
+bloc_list = []
+SPAWNBLOC = pygame.USEREVENT
+pygame.time.set_timer(SPAWNBLOC,1200)
+
+def create_bloc():
+    new_bloc = bloc_surface.get_rect(midtop = (1250,200))
+    return new_bloc
+
+def move_bloc(blocs):
+    for bloc in blocs :
+        bloc.centerx -= 5
+    return blocs
+def draw_bloc(blocs):
+    for bloc in blocs:
+       fenetre.blit(bloc_surface,bloc)
+
 #instances
 jeu = Jeu()
 
@@ -48,15 +66,11 @@ run = True
 #main loop
 while run:
     # fps
-    fps.tick(60)
+    fps.tick(30)
     #fond
     dupli_fond()
 
-    # movement fond
-    floor_x_pos -= 1
-    mouv_sol()
-    if floor_x_pos <= -600:
-        floor_x_pos = 0
+
 
     #récupérer les projectiles du joueur
     for projectile in jeu.player.all_projectiles:
@@ -68,6 +82,13 @@ while run:
     #gamestarting
     if jeu.is_playing:
         jeu.actualiser(fenetre)
+        # movement fond
+        floor_x_pos -= 1
+        mouv_sol()
+        if floor_x_pos <= -600:
+            floor_x_pos = 0
+
+
 
     else:
         fenetre.blit(banner, banner_rect)
