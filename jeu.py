@@ -51,6 +51,7 @@ class Jeu:
 
         if self.pressed.get(pygame.K_LEFT) and self.player.rect.x > self.player.vit_x:
             self.player.rect.x -= self.player.vit_x
+
         if self.pressed.get(pygame.K_RIGHT) and self.player.rect.x < 1200 - self.player.width - self.player.vit_x:
             self.player.rect.x += self.player.vit_x
 

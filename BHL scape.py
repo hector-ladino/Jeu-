@@ -8,38 +8,42 @@ pygame. init()
 fond = pygame.image.load('bg4.png')
 
 #fenêtre du jeu
-pygame.display.set_caption("notre jeu")
+pygame.display.set_caption("C'est bientot Noel")
 fenetre = pygame.display.set_mode((1200, 600))
 
+
+#couleurs
+black = (0, 0, 0)
+white = (255, 255, 255)
+
+
 #création d'un écran start
-banner = pygame.transform.scale(pygame.image.load('noel.png'), (700,400))
+banner = pygame.transform.scale(pygame.image.load('noel.png'), (850,320))
 banner_rect = banner.get_rect()
-banner_rect.x = math.ceil(fenetre.get_width()/4.7)
-banner_rect.y = math.ceil(fenetre.get_height()/5.4)
+banner_rect.x = math.ceil(fenetre.get_width()/8)
+banner_rect.y = math.ceil(fenetre.get_height()/1000)
 
 #bouton pour lancer partie
 play_bouton = pygame.transform.scale(pygame.image.load('start.png'), (200, 60))
 play_bouton_rect = play_bouton.get_rect()
-play_bouton_rect.x = math.ceil(fenetre.get_width()/3.15)
-play_bouton_rect.y = math.ceil(fenetre.get_height()/1.4)
+play_bouton_rect.x = math.ceil(fenetre.get_width()/2.45)
+play_bouton_rect.y = math.ceil(fenetre.get_height()/1.2)
 
-#bouton pour savoir comment jouer
-tuto_bouton = pygame.transform.scale(pygame.image.load('howtoplay.png'), (200, 60))
-tuto_bouton_rect = tuto_bouton.get_rect()
-tuto_bouton_rect.x = math.ceil(fenetre.get_width()/1.95)
-tuto_bouton_rect.y = math.ceil(fenetre.get_height()/1.4)
-
+#ecran "how to play"
+ecran_htp = pygame.transform.scale(pygame.image.load("écran_how_to_play.png"), (320, 220))
+ecran_htp_rect = ecran_htp.get_rect()
+ecran_htp_rect.x = math.ceil(fenetre.get_width()/2.8)
+ecran_htp_rect.y = math.ceil(fenetre.get_height()/2.5)
 
 
 #FPS
 fps = pygame.time.Clock()
+
 #movement fond
 #sol qui bouge
 floor_surface = pygame.transform.scale(pygame.image.load('ground.PNG'), (1200,160))
 
-
 floor_x_pos = 0
-
 fond_x_pos = 0
 
 def mouv_sol() :
@@ -51,6 +55,12 @@ def mouv_sol() :
 def dupli_fond():
     fenetre.blit(fond, (fond_x_pos,0))
     fenetre.blit(fond,(fond_x_pos+600,0))
+
+#score
+score_value = 0
+font = pygame.font.Font('freesansbold.ttf', 32)
+text_x = 10
+text_y = 10
 
 
 #bloc de glace
@@ -74,8 +84,8 @@ def draw_bloc(blocs):
 #instances
 jeu = Jeu()
 
-run = True
 
+run = True
 #main loop
 while run:
     # fps
@@ -105,14 +115,12 @@ while run:
 
         jeu.actualiser(fenetre)
 
-
-
-
-
     else:
+        fenetre.fill(white)
         fenetre.blit(banner, banner_rect)
         fenetre.blit(play_bouton, play_bouton_rect)
-        fenetre.blit(tuto_bouton, tuto_bouton_rect)
+        fenetre.blit(ecran_htp, ecran_htp_rect)
+
 
 
     #mettre a jour l'écran
@@ -128,11 +136,11 @@ while run:
         if event.type == pygame.QUIT:
             run = False
             pygame.quit()
-    # le joueur presse une touche
+
+        # le joueur presse une touche
         elif event.type == pygame.KEYDOWN:
             jeu.pressed[event.key] = True
 
-            #détecter la touche espace enclanchée
             if event.key == pygame.K_SPACE:
                 jeu.player.lancer_projectile()
 
@@ -142,9 +150,5 @@ while run:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if play_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton start
                 jeu.start()
-
-
-
-
 
 
