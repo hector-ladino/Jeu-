@@ -77,6 +77,8 @@ class Jeu:
         #plusieurs méchants
         self.les_monstres = pygame.sprite.Group()
         self.pressed = {}
+        #barre d'évenements
+        self.bloc_event = blocEvent(self)
 
     def start(self):
         self.is_playing = True
@@ -84,17 +86,15 @@ class Jeu:
         self.spawn_monster()
         self.spawn_monster()
         self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
+
 
 
     def game_over(self):
         #reinitialisation du jeu
         self.les_monstres = pygame.sprite.Group()
+        self.bloc_event.les_blocs = pygame.sprite.Group()
         self.player.health = self.player.max_health
+        self.bloc_event.reset_percent()
         self.is_playing = False
 
     def actualiser(self, fenetre):
@@ -103,11 +103,26 @@ class Jeu:
         # actualiser la barre de vie du joueur
         self.player.update_health_bar(fenetre)
 
+        #actualiser la barre d'évenements du jeu
+        self.bloc_event.update_bar(fenetre)
+
+            #récuperer les monstre
         for monstre in self.les_monstres:
             monstre.move()
 
+            # récupérer les projectiles du joueur
+        for projectile in jeu.player.all_projectiles:
+            projectile.move()
+
+        #recup les bloc
+        for bloc in self.bloc_event.les_blocs:
+            bloc.move()
         # apparition des monstres
         self.les_monstres.draw(fenetre)
+
+        #apparition des blocs
+
+        self.bloc_event.les_blocs.draw(fenetre)
 
         # commande joueur
 
@@ -169,6 +184,9 @@ class Monstre (pygame.sprite.Sprite):
             self.rect.x = 1000 + random.randint(300, 500)
             self.vit = random.randint(1, 10)
             self.jeu.player.damage(self.attack)
+        if self.rect.x <= 0:
+            self.rect.x = 1000 + random.randint(300, 500)
+            self.vit = random.randint(1, 10)
 
 # classe representant notre joueur
 
@@ -234,12 +252,10 @@ class player(pygame.sprite.Sprite):
         #joueur ne touche pas un monstre
         if not self.jeu.check_ifhit(self, self.jeu.les_monstres):
             self.rect.x += self.vit_x
-            self.right = True
-            self.left = False
+
+
     def move_left(self):
         self.rect.x -= self.vit_x
-        self.right = False
-        self.left = True
 
 
 
@@ -286,25 +302,98 @@ class Projectile (pygame.sprite.Sprite):
 
 
 
+class blocEvent:
+    #lors du chargement -> créer un compteur
+    def __init__(self, jeu):
+        self.jeu = jeu
+        self.percent = 0
+        self.speed = 100
 
 
-#bloc de glace
-bloc_surface = pygame.transform.scale(pygame.image.load('brique.png'), (200,400))
-bloc_list = []
-SPAWNBLOC = pygame.USEREVENT
-pygame.time.set_timer(SPAWNBLOC,4000)
+        #groupe de sprite pour stocker les blocs
+        self.les_blocs = pygame.sprite.Group()
 
-def create_bloc():
-    new_bloc = bloc_surface.get_rect(midtop = (1250,200))
-    return new_bloc
 
-def move_bloc(blocs):
-    for bloc in blocs :
-        bloc.centerx -= 5
-    return blocs
-def draw_bloc(blocs):
-    for bloc in blocs:
-       fenetre.blit(bloc_surface,bloc)
+
+    def add_percent(self):
+        self.percent += self.speed/100
+
+
+    def jauge_max(self):
+        return self.percent >= 100
+
+
+    def reset_percent(self):
+        self.percent = 0
+
+
+    def bloc_arrive(self):
+        self.les_blocs.add(bloc(self))
+
+    def lesblocs(self):
+        # la jauge au max
+        if self.jauge_max():
+            self.bloc_arrive()
+            self.reset_percent()
+
+    def update_bar(self, fenetre):
+
+        #ajouter du pourcentage à la barre
+        self.add_percent()
+
+        #arrivée de blocs
+        self.lesblocs()
+
+        #barre noir (en arriere plan)
+        pygame.draw.rect(fenetre, (0, 0, 0), [
+            0,
+            fenetre.get_height() - 40,
+            fenetre.get_width(),
+            20
+        ])
+        #barre rouge (jauge d'event)
+        pygame.draw.rect(fenetre, (255, 215, 0, 255), [
+            0,
+            fenetre.get_height() - 40,
+            (fenetre.get_width() / 100)*self.percent,
+            20
+            ])
+
+
+#bloc
+
+class bloc(pygame.sprite.Sprite):
+
+    def __init__(self, bloc_event):
+        super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load('brique.png'),(150,300))
+        self.rect = self.image.get_rect()
+        self.vit = random. randint(5,10)
+        self.rect.x = 1200
+        self.rect.y = 255
+        self.bloc_event = bloc_event
+
+    def remove(self):
+        # suppression de du bloc
+        self.bloc_event.les_blocs.remove(self)
+
+
+    def move(self):
+        if not self.bloc_event.jeu.check_ifhit(self, self.bloc_event.jeu.les_joueurs):
+            self.rect.x -= self.vit
+
+    #arrive au bout
+        if self.rect.x <= 0:
+          self.remove()
+
+
+        if self.bloc_event.jeu.check_ifhit(self, self.bloc_event.jeu.les_joueurs):
+            self.bloc_event.jeu.player.damage(1)
+
+
+
+
+
 
 #instances
 jeu = Jeu()
@@ -319,19 +408,17 @@ while run:
     #fond
     dupli_fond()
 
-    bloc_list = move_bloc(bloc_list)
 
 
-    #récupérer les projectiles du joueur
-    for projectile in jeu.player.all_projectiles:
-        projectile.move()
+
+
 
     #appliquer l'ensemble des images du groupe projectile
     jeu.player.all_projectiles.draw(fenetre)
 
     #gamestarting
     if jeu.is_playing:
-        draw_bloc(bloc_list)
+
         # movement fond
         floor_x_pos -= 1
         mouv_sol()
@@ -352,9 +439,6 @@ while run:
     pygame.display.flip()
     #fermer fenetre
     for event in pygame.event.get():
-        # bloc
-        if event.type == SPAWNBLOC:
-            bloc_list.append(create_bloc())
 
 
         #fermeture de fenetre
