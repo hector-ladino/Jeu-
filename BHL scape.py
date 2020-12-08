@@ -30,7 +30,7 @@ play_bouton_rect.x = math.ceil(fenetre.get_width()/2.45)
 play_bouton_rect.y = math.ceil(fenetre.get_height()/1.2)
 
 #ecran "how to play"
-ecran_htp = pygame.transform.scale(pygame.image.load("écran_how_to_play.png"), (320, 220))
+ecran_htp = pygame.transform.scale(pygame.image.load("écran_how_to_play.png"), (340, 230))
 ecran_htp_rect = ecran_htp.get_rect()
 ecran_htp_rect.x = math.ceil(fenetre.get_width()/2.8)
 ecran_htp_rect.y = math.ceil(fenetre.get_height()/2.5)
