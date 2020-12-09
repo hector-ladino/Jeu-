@@ -91,9 +91,10 @@ class Jeu:
         self.les_joueurs.add(self.player)
         #plusieurs méchants
         self.les_monstres = pygame.sprite.Group()
-        self.pressed = {}
         #barre d'évenements
         self.bloc_event = blocEvent(self)
+
+        self.pressed = {}
 
     def start(self):
         self.is_playing = True
@@ -145,20 +146,20 @@ class Jeu:
         # commande joueur
 
         if self.pressed.get(pygame.K_LEFT) and self.player.rect.x > self.player.vit_x:
-            self.player.rect.x -= self.player.vit_x
-
+            self.player.move_left()
         if self.pressed.get(pygame.K_RIGHT) and self.player.rect.x < 1200 - self.player.width - self.player.vit_x:
-            self.player.rect.x += self.player.vit_x
+            self.player.move_right()
 
         if self.player.jump is False and self.pressed.get(pygame.K_UP):
             self.player.jump = True
 
         if self.player.jump is True:
-            self.player.rect.y -= self.player.vit_y*4 #augmenter ou diminuer la hauteur du saut
-            self.player.vit_y -= 1
-            if self.player.vit_y < -10:
-                self.player.jump = False
-                self.player.vit_y = 10
+            if not self.check_ifhit(self.player, self.bloc_event.les_blocs):
+                self.player.rect.y -= self.player.vit_y*4 #augmenter ou diminuer la hauteur du saut
+                self.player.vit_y -= 1
+                if self.player.vit_y < -10:
+                    self.player.jump = False
+                    self.player.vit_y = 10
 
 
     def check_ifhit(self, sprite, group):
@@ -267,8 +268,8 @@ class player(pygame.sprite.Sprite):
 
 
     def move_right(self):
-        #joueur ne touche pas un monstre
-        if not self.jeu.check_ifhit(self, self.jeu.les_monstres):
+        #joueur ne touche pas un bloc
+        if not self.jeu.check_ifhit(self, self.jeu.bloc_event.les_blocs) or self.jump:
             self.rect.x += self.vit_x
 
 
@@ -398,7 +399,7 @@ class bloc(pygame.sprite.Sprite):
 
 
     def move(self):
-        if not self.bloc_event.jeu.check_ifhit(self, self.bloc_event.jeu.les_joueurs):
+        if not self.bloc_event.jeu.check_ifhit(self, self.bloc_event.jeu.les_joueurs) or self.bloc_event.jeu.player.jump:
             self.rect.x -= self.vit
 
     #arrive au bout
