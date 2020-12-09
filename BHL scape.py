@@ -10,7 +10,7 @@ pygame. init()
 fond = pygame.image.load('bg4.png')
 
 #fenêtre du jeu
-pygame.display.set_caption("C'est bientot Noel")
+pygame.display.set_caption("C'est bientôt Noël !")
 fenetre = pygame.display.set_mode((1200, 600))
 
 
@@ -37,7 +37,6 @@ ecran_htp_rect = ecran_htp.get_rect()
 ecran_htp_rect.x = math.ceil(fenetre.get_width()/2.8)
 ecran_htp_rect.y = math.ceil(fenetre.get_height()/2.6)
 
-
 #ecran game over
 embleme = pygame.image.load('game over.png')
 embleme_rect = banner.get_rect()
@@ -49,7 +48,6 @@ tryagain_bouton = pygame.transform.scale(pygame.image.load('try again.png'), (20
 tryagain_bouton_rect = play_bouton.get_rect()
 tryagain_bouton_rect.x = math.ceil(fenetre.get_width()/2.45)
 tryagain_bouton_rect.y = math.ceil(fenetre.get_height()/1.2)
-
 
 #FPS
 fps = pygame.time.Clock()
@@ -72,11 +70,13 @@ def dupli_fond():
     fenetre.blit(fond,(fond_x_pos+600,0))
 
 #score
-score_value = 0
-font = pygame.font.Font('freesansbold.ttf', 32)
-text_x = 10
-text_y = 10
-
+font_name =pygame.font.match_font("comicsans")
+def draw_text(surface,text,size,x,y):
+    font = pygame.font.Font(font_name,size)
+    text_surface = font.render(text,True, (0,0,0))
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (x,y)
+    fenetre.blit(text_surface, text_rect)
 
  #class qui représente le jeu
 class Jeu:
@@ -95,6 +95,8 @@ class Jeu:
         self.bloc_event = blocEvent(self)
 
         self.pressed = {}
+        self.score = 0
+        self.topscore = 0
 
     def start(self):
         self.is_playing = True
@@ -115,6 +117,7 @@ class Jeu:
         self.bloc_event.reset_percent()
         self.gameover = True
         self.is_playing = False
+        self.score = 0
 
     def actualiser(self, fenetre):
         fenetre.blit(self.player.image, self.player.rect)
@@ -258,6 +261,8 @@ class player(pygame.sprite.Sprite):
         if self.health - amount > amount:
             self.health -= amount
         else:
+            if jeu.score > jeu.topscore:
+                jeu.topscore = jeu.score
             self.jeu.game_over() #si plus de vie
 
 
@@ -307,6 +312,7 @@ class Projectile (pygame.sprite.Sprite):
         #voir si le projectile touche un monstre
         for monster in self.player.jeu.check_ifhit(self, self.player.jeu.les_monstres):
             #si c'est vrai alors on supprime le projectile
+            jeu.score += 1
             self.remove()
             #infliger degats
             monster.degats(self.player.attack)
@@ -439,7 +445,8 @@ while run:
 
     #gamestarting
     if jeu.is_playing:
-
+        draw_text(fenetre, "Score : " +str(jeu.score),30,75,10)
+        draw_text(fenetre, "Top Score : "+str(jeu.topscore),30,80,40)
         # movement fond
         floor_x_pos -= 1
         mouv_sol()
