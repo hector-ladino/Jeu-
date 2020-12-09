@@ -99,6 +99,7 @@ class Jeu:
         self.player.health = self.player.max_health
         self.bloc_event.reset_percent()
         self.gameover = True
+        self.is_playing = False
 
     def actualiser(self, fenetre):
         fenetre.blit(self.player.image, self.player.rect)
@@ -471,5 +472,6 @@ while run:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if play_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton start
                 jeu.start()
+           
 
 
