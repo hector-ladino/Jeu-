@@ -38,3 +38,23 @@ class bouledeneige(object):
             else:
                 self.vit = self.vit * -1
                 self.walkCount = 0
+
+                # bloc de glace
+                bloc_surface = pygame.transform.scale(pygame.image.load('brique.png'), (200, 400))
+                bloc_list = []
+                SPAWNBLOC = pygame.USEREVENT
+                pygame.time.set_timer(SPAWNBLOC, 4000)
+
+
+                def move_bloc(blocs):
+                    for bloc in blocs:
+                        bloc.centerx -= 5
+                    return blocs
+
+                def draw_bloc(blocs):
+                    for bloc in blocs:
+                        fenetre.blit(bloc_surface, bloc)
+                        bloc_list = move_bloc(bloc_list)
+                        draw_bloc(bloc_list)
+                        if event.type == SPAWNBLOC:
+                            bloc_list.append(create_bloc())

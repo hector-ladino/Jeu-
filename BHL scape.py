@@ -4,13 +4,13 @@ import math
 import random
 
 
-pygame.init()
+pygame. init()
 
 #arrière plan du jeu
 fond = pygame.image.load('bg4.png')
 
 #fenêtre du jeu
-pygame.display.set_caption("C'est bientôt Noël !")
+pygame.display.set_caption("C'est bientot Noel")
 fenetre = pygame.display.set_mode((1200, 600))
 
 
@@ -38,7 +38,6 @@ ecran_htp_rect.x = math.ceil(fenetre.get_width()/2.8)
 ecran_htp_rect.y = math.ceil(fenetre.get_height()/2.6)
 
 
-
 #FPS
 fps = pygame.time.Clock()
 
@@ -60,13 +59,11 @@ def dupli_fond():
     fenetre.blit(fond,(fond_x_pos+600,0))
 
 #score
-font_name=pygame.font.match_font("comicsans")
-def draw_text (surface, text, size, x, y):
-    font = pygame.font.Font(font_name,size)
-    text_surface = font.render(text, True, (0,0,0))
-    text_rect = text_surface.get_rect()
-    text_rect.midtop = (x,y)
-    fenetre.blit(text_surface, text_rect)
+score_value = 0
+font = pygame.font.Font('freesansbold.ttf', 32)
+text_x = 10
+text_y = 10
+
 
  #class qui représente le jeu
 class Jeu:
@@ -80,8 +77,6 @@ class Jeu:
         #plusieurs méchants
         self.les_monstres = pygame.sprite.Group()
         self.pressed = {}
-        self.score = 0
-        self.topscore = 0
 
     def start(self):
         self.is_playing = True
@@ -100,7 +95,6 @@ class Jeu:
         #reinitialisation du jeu
         self.les_monstres = pygame.sprite.Group()
         self.player.health = self.player.max_health
-        self.score = 0
         self.is_playing = False
 
     def actualiser(self, fenetre):
@@ -136,6 +130,7 @@ class Jeu:
 
     def check_ifhit(self, sprite, group):
         return pygame.sprite.spritecollide(sprite, group, False, pygame.sprite.collide_mask)
+
 
     def spawn_monster(self):
         monstre = Monstre(self)
@@ -226,8 +221,6 @@ class player(pygame.sprite.Sprite):
         if self.health - amount > amount:
             self.health -= amount
         else:
-            if jeu.score > jeu.topscore:
-                jeu.topscore = jeu.score
             self.jeu.game_over() #si plus de vie
 
 
@@ -278,7 +271,6 @@ class Projectile (pygame.sprite.Sprite):
         #voir si le projectile touche un monstre
         for monster in self.player.jeu.check_ifhit(self, self.player.jeu.les_monstres):
             #si c'est vrai alors on supprime le projectile
-            jeu.score += 1
             self.remove()
             #infliger degats
             monster.degats(self.player.attack)
@@ -318,7 +310,6 @@ def draw_bloc(blocs):
 jeu = Jeu()
 
 
-
 run = True
 #main loop
 while run:
@@ -341,8 +332,6 @@ while run:
     #gamestarting
     if jeu.is_playing:
         draw_bloc(bloc_list)
-        draw_text(fenetre, "Score : " +str(jeu.score),30,75,10)
-        draw_text(fenetre,"Top Score : " + str(jeu.topscore),30,80,40)
         # movement fond
         floor_x_pos -= 1
         mouv_sol()
@@ -356,6 +345,8 @@ while run:
         fenetre.blit(banner, banner_rect)
         fenetre.blit(play_bouton, play_bouton_rect)
         fenetre.blit(ecran_htp, ecran_htp_rect)
+
+
 
     #mettre a jour l'écran
     pygame.display.flip()
@@ -384,4 +375,5 @@ while run:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if play_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton start
                 jeu.start()
+
 
