@@ -38,6 +38,19 @@ ecran_htp_rect.x = math.ceil(fenetre.get_width()/2.8)
 ecran_htp_rect.y = math.ceil(fenetre.get_height()/2.6)
 
 
+#ecran game over
+embleme = pygame.image.load('game over.png')
+embleme_rect = banner.get_rect()
+embleme_rect.x = math.ceil(fenetre.get_width()/4)
+embleme_rect.y = math.ceil(fenetre.get_height()/4)
+
+#bouton pour relancer la partie
+tryagain_bouton = pygame.transform.scale(pygame.image.load('try again.png'), (200, 60))
+tryagain_bouton_rect = play_bouton.get_rect()
+tryagain_bouton_rect.x = math.ceil(fenetre.get_width()/2.45)
+tryagain_bouton_rect.y = math.ceil(fenetre.get_height()/1.2)
+
+
 #FPS
 fps = pygame.time.Clock()
 
@@ -95,6 +108,7 @@ class Jeu:
     def game_over(self):
         #reinitialisation du jeu
         self.les_monstres = pygame.sprite.Group()
+        self.player.rect.x = 100
         self.bloc_event.les_blocs = pygame.sprite.Group()
         self.player.health = self.player.max_health
         self.bloc_event.reset_percent()
@@ -256,6 +270,7 @@ class player(pygame.sprite.Sprite):
         #joueur ne touche pas un monstre
         if not self.jeu.check_ifhit(self, self.jeu.les_monstres):
             self.rect.x += self.vit_x
+
 
 
     def move_left(self):
@@ -442,6 +457,9 @@ while run:
 
     if jeu.gameover:
         fenetre.fill(white)
+        fenetre.blit(embleme, embleme_rect)
+        fenetre.blit(tryagain_bouton, tryagain_bouton_rect)
+
 
 
 
@@ -471,6 +489,9 @@ while run:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if play_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton start
+                jeu.start()
+
+            if tryagain_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton try again
                 jeu.start()
            
 
