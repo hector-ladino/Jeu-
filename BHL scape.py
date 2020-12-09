@@ -93,7 +93,6 @@ class Jeu:
         self.les_monstres = pygame.sprite.Group()
         #barre d'évenements
         self.bloc_event = blocEvent(self)
-
         self.pressed = {}
         self.score = 0
         self.topscore = 0
@@ -118,9 +117,9 @@ class Jeu:
         self.bloc_event.les_blocs = pygame.sprite.Group()
         self.player.health = self.player.max_health
         self.bloc_event.reset_percent()
+        self.score = 0
         self.gameover = True
         self.is_playing = False
-        self.score = 0
 
     def actualiser(self, fenetre):
         fenetre.blit(self.player.image, self.player.rect)
@@ -440,7 +439,7 @@ jeu = Jeu()
 run = True
 
 while run:
-    jeu.score += 1
+
     # fps
     fps.tick(30)
 
@@ -457,6 +456,7 @@ while run:
 
     #gamestarting
     if jeu.is_playing:
+        jeu.score += 1
         draw_text(fenetre, "Score : " +str(jeu.score),30,600,30)
 
         # movement fond
