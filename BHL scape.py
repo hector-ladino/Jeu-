@@ -70,6 +70,8 @@ class Jeu:
     def __init__(self):
         #jeu start ou non
         self.is_playing = False
+        #fin du jeu
+        self.gameover = False
         #joueur
         self.les_joueurs = pygame.sprite.Group()
         self.player = player(self)
@@ -82,6 +84,7 @@ class Jeu:
 
     def start(self):
         self.is_playing = True
+        self.gameover = False
         self.spawn_monster()
         self.spawn_monster()
         self.spawn_monster()
@@ -95,7 +98,7 @@ class Jeu:
         self.bloc_event.les_blocs = pygame.sprite.Group()
         self.player.health = self.player.max_health
         self.bloc_event.reset_percent()
-        self.is_playing = False
+        self.gameover = True
 
     def actualiser(self, fenetre):
         fenetre.blit(self.player.image, self.player.rect)
@@ -399,8 +402,9 @@ class bloc(pygame.sprite.Sprite):
 jeu = Jeu()
 
 
-run = True
 #main loop
+run = True
+
 while run:
     # fps
     fps.tick(30)
@@ -427,11 +431,19 @@ while run:
 
         jeu.actualiser(fenetre)
 
+
     else:
         fenetre.fill(white)
         fenetre.blit(banner, banner_rect)
         fenetre.blit(play_bouton, play_bouton_rect)
         fenetre.blit(ecran_htp, ecran_htp_rect)
+
+
+    if jeu.gameover:
+        fenetre.fill(white)
+
+
+
 
 
 
