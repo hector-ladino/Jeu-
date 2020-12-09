@@ -39,9 +39,9 @@ ecran_htp_rect.y = math.ceil(fenetre.get_height()/2.6)
 
 #ecran game over
 embleme = pygame.image.load('game over.png')
-embleme_rect = banner.get_rect()
+embleme_rect = embleme.get_rect()
 embleme_rect.x = math.ceil(fenetre.get_width()/4)
-embleme_rect.y = math.ceil(fenetre.get_height()/4)
+embleme_rect.y = math.ceil(fenetre.get_height()/7)
 
 #bouton pour relancer la partie
 tryagain_bouton = pygame.transform.scale(pygame.image.load('try again.png'), (200, 60))
@@ -97,14 +97,17 @@ class Jeu:
         self.pressed = {}
         self.score = 0
         self.topscore = 0
+        self.yourscore = 0
 
     def start(self):
         self.is_playing = True
         self.gameover = False
         self.spawn_monster()
         self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
+        if jeu.score > 500:
+            self.spawn_monster()
+            self.spawn_monster()
+
 
 
 
@@ -208,7 +211,13 @@ class Monstre (pygame.sprite.Sprite):
             self.jeu.player.damage(self.attack)
         if self.rect.x <= 0:
             self.rect.x = 1000 + random.randint(300, 500)
-            self.vit = random.randint(1, 10)
+            self.vit = random.randint(1, 5)
+
+        if self.jeu.score >= 200:
+          self.rect.x -= random.randint(5,10)
+
+        if self.jeu.score >= 500:
+            self.rect.x -= random.randint(10,20)
 
 # classe representant notre joueur
 
@@ -263,6 +272,8 @@ class player(pygame.sprite.Sprite):
         else:
             if jeu.score > jeu.topscore:
                 jeu.topscore = jeu.score
+            if jeu.score > 0:
+                jeu.yourscore = jeu.score
             self.jeu.game_over() #si plus de vie
 
 
@@ -312,7 +323,7 @@ class Projectile (pygame.sprite.Sprite):
         #voir si le projectile touche un monstre
         for monster in self.player.jeu.check_ifhit(self, self.player.jeu.les_monstres):
             #si c'est vrai alors on supprime le projectile
-            jeu.score += 1
+
             self.remove()
             #infliger degats
             monster.degats(self.player.attack)
@@ -429,6 +440,7 @@ jeu = Jeu()
 run = True
 
 while run:
+    jeu.score += 1
     # fps
     fps.tick(30)
 
@@ -445,8 +457,8 @@ while run:
 
     #gamestarting
     if jeu.is_playing:
-        draw_text(fenetre, "Score : " +str(jeu.score),30,75,10)
-        draw_text(fenetre, "Top Score : "+str(jeu.topscore),30,80,40)
+        draw_text(fenetre, "Score : " +str(jeu.score),30,600,30)
+
         # movement fond
         floor_x_pos -= 1
         mouv_sol()
@@ -467,6 +479,8 @@ while run:
         fenetre.fill(white)
         fenetre.blit(embleme, embleme_rect)
         fenetre.blit(tryagain_bouton, tryagain_bouton_rect)
+        draw_text(fenetre, "Top Score : " + str(jeu.topscore), 60, 600, 300)
+        draw_text(fenetre, "Your Score : " + str(jeu.yourscore), 50, 600, 350)
 
 
 
