@@ -70,7 +70,7 @@ def dupli_fond():
     fenetre.blit(fond,(fond_x_pos+600,0))
 
 #score
-font_name =pygame.font.match_font("comicsans")
+font_name =pygame.font.match_font("04B_19.ttf",40)
 def draw_text(surface,text,size,x,y):
     font = pygame.font.Font(font_name,size)
     text_surface = font.render(text,True, (0,0,0))
@@ -91,6 +91,8 @@ class Jeu:
         self.les_joueurs.add(self.player)
         #plusieurs méchants
         self.les_monstres = pygame.sprite.Group()
+        #plusieurs super méchants
+        self.les_supermonstres = pygame.sprite.Group()
         #barre d'évenements
         self.bloc_event = blocEvent(self)
         self.pressed = {}
@@ -101,7 +103,7 @@ class Jeu:
     def start(self):
         self.is_playing = True
         self.gameover = False
-        self.spawn_monster()
+        self.spawn_supermonster()
         self.spawn_monster()
         if jeu.score > 500:
             self.spawn_monster()
@@ -134,6 +136,10 @@ class Jeu:
         for monstre in self.les_monstres:
             monstre.move()
 
+            #récupérer les supermonstres
+        for supermonstre in self.les_supermonstres:
+            supermonstre.move()
+
             # récupérer les projectiles du joueur
         for projectile in jeu.player.all_projectiles:
             projectile.move()
@@ -143,6 +149,7 @@ class Jeu:
             bloc.move()
         # apparition des monstres
         self.les_monstres.draw(fenetre)
+        self.les_supermonstres.draw(fenetre)
 
         #apparition des blocs
 
@@ -175,48 +182,9 @@ class Jeu:
         monstre = Monstre(self)
         self.les_monstres.add(monstre)
 
-#méchant monstre
-
-class Monstre (pygame.sprite.Sprite):
-    def __init__(self, jeu):
-        super().__init__()
-        self.jeu = jeu
-        self.health = 1
-        self.attack = 30
-        self.image = pygame.transform.scale(pygame.image.load("méchant.png"), (58, 96))
-        self.rect = self.image.get_rect()
-        self.rect.x = 1000 + random.randint(0,200)
-        self.rect.y = 350
-        self.vit = random.randint(1,10)
-
-    def degats(self, amount):
-        #infliger des degats
-        self.health -= amount
-        #voir si le nb de points de vie et plus petit ou égal à 0
-        if self.health <= 0:
-            self.rect.x = 1200 + random.randint(0,400)
-
-
-    def remove(self):
-        self.jeu.les_monstres.remove(self)
-
-    def move(self):
-        # le dépacement se fait uniquement lorsque le monstre ne touche pas le joueur
-        self.rect.x -= self.vit
-
-        if self.jeu.check_ifhit(self, self.jeu.les_joueurs):
-            self.rect.x = 1000 + random.randint(300, 500)
-            self.vit = random.randint(1, 10)
-            self.jeu.player.damage(self.attack)
-        if self.rect.x <= 0:
-            self.rect.x = 1000 + random.randint(300, 500)
-            self.vit = random.randint(1, 5)
-
-        if self.jeu.score >= 200:
-          self.rect.x -= random.randint(5,10)
-
-        if self.jeu.score >= 500:
-            self.rect.x -= random.randint(10,20)
+    def spawn_supermonster(self):
+        supermonstre = Super_Monstre(self)
+        self.les_supermonstres.add(supermonstre)
 
 # classe representant notre joueur
 
@@ -292,7 +260,89 @@ class player(pygame.sprite.Sprite):
     def move_left(self):
         self.rect.x -= self.vit_x
 
+#méchant monstre
 
+class Monstre (pygame.sprite.Sprite):
+    def __init__(self, jeu):
+        super().__init__()
+        self.jeu = jeu
+        self.health = 1
+        self.attack = 30
+        self.image = pygame.transform.scale(pygame.image.load("méchant.png"), (58, 96))
+        self.rect = self.image.get_rect()
+        self.rect.x = 1000 + random.randint(0,200)
+        self.rect.y = 350
+        self.vit = random.randint(1,10)
+
+    def degats(self, amount):
+        #infliger des degats
+        self.health -= amount
+        #voir si le nb de points de vie et plus petit ou égal à 0
+        if self.health <= 0:
+            self.rect.x = 1200 + random.randint(0,400)
+
+
+    def remove(self):
+        self.jeu.les_monstres.remove(self)
+
+    def move(self):
+        # le dépacement se fait uniquement lorsque le monstre ne touche pas le joueur
+        self.rect.x -= self.vit
+
+        if self.jeu.check_ifhit(self, self.jeu.les_joueurs):
+            self.rect.x = 1000 + random.randint(300, 500)
+            self.vit = random.randint(1, 10)
+            self.jeu.player.damage(self.attack)
+        if self.rect.x <= 0:
+            self.rect.x = 1000 + random.randint(300, 500)
+            self.vit = random.randint(1, 5)
+
+        if self.jeu.score >= 200:
+          self.rect.x -= random.randint(5,10)
+
+        if self.jeu.score >= 500:
+            self.rect.x -= random.randint(10,20)
+
+# super méchant monstre
+
+class Super_Monstre (pygame.sprite.Sprite):
+    def __init__(self, jeu):
+        super().__init__()
+        self.jeu = jeu
+        self.health = 20
+        self.attack = 30
+        self.image = pygame.transform.scale(pygame.image.load("super_méchant.png"), (172,264))
+        self.rect = self.image.get_rect()
+        self.rect.x = 1000 + random.randint(0,200)
+        self.rect.y = 350
+        self.vit = random.randint(1,10)
+
+    def degats(self, amount):
+        #infliger des degats
+        self.health -= amount
+        #voir si le nb de points de vie et plus petit ou égal à 0
+        if self.health <= 0:
+            self.remove()
+
+
+    def remove(self):
+        self.jeu.les_supermonstres.remove(self)
+
+    def move(self):
+        # le dépacement se fait uniquement lorsque le monstre ne touche pas le joueur
+        self.rect.x -= self.vit
+
+        if self.jeu.check_ifhit(self, self.jeu.les_joueurs):
+            self.rect.x = 1000 + random.randint(300, 500)
+            self.vit = random.randint(1, 10)
+            self.jeu.player.damage(self.attack)
+        if self.rect.x <= 0:
+            self.rect.x = 1000 + random.randint(300, 500)
+            self.vit = random.randint(1, 5)
+
+
+
+#projectile
 
 class Projectile (pygame.sprite.Sprite):
 
@@ -327,6 +377,10 @@ class Projectile (pygame.sprite.Sprite):
             #infliger degats
             monster.degats(self.player.attack)
 
+        #voir si le projectil touche un supermonstre
+        for supermonstre in self.player.jeu.check_ifhit(self,self.player.jeu.les_supermonstres):
+            self.remove()
+            supermonstre.degats(self.player.attack)
         #projectile plus présent sur l'écran
 
         if self.rect.x > 1200:
