@@ -13,11 +13,12 @@ fond = pygame.image.load('bg4.png')
 pygame.display.set_caption("C'est bientôt Noël !")
 fenetre = pygame.display.set_mode((1200, 600))
 
-
 #couleurs
 black = (0, 0, 0)
 white = (255, 255, 255)
 
+#sound
+gameoversound = pygame.mixer.Sound("gameover.mp3")
 
 #création d'un écran start
 banner = pygame.transform.scale(pygame.image.load('noel.png'), (850,320))
@@ -122,6 +123,9 @@ class Jeu:
         self.score = 0
         self.gameover = True
         self.is_playing = False
+        gameoversound.play()
+
+
 
     def actualiser(self, fenetre):
         fenetre.blit(self.player.image, self.player.rect)
@@ -244,6 +248,7 @@ class player(pygame.sprite.Sprite):
                 jeu.topscore = jeu.score
             if jeu.score > 0:
                 jeu.yourscore = jeu.score
+            pygame.mixer.music.stop()
             self.jeu.game_over() #si plus de vie
 
 
@@ -257,8 +262,6 @@ class player(pygame.sprite.Sprite):
         #joueur ne touche pas un bloc
         if not self.jeu.check_ifhit(self, self.jeu.bloc_event.les_blocs) or self.jump:
             self.rect.x += self.vit_x
-
-
 
     def move_left(self):
         self.rect.x -= self.vit_x
@@ -539,6 +542,8 @@ while run:
 
 
     if jeu.gameover:
+
+
         fenetre.fill(white)
         fenetre.blit(embleme, embleme_rect)
         fenetre.blit(tryagain_bouton, tryagain_bouton_rect)
@@ -575,9 +580,15 @@ while run:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if play_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton start
                 jeu.start()
+                pygame.mixer.music.load("rock-your-heart-out.mp3")
+                pygame.mixer.music.play(-1, 0.0)
 
             if tryagain_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton try again
+                gameoversound.stop()
                 jeu.start()
+
+
+
            
 
 
