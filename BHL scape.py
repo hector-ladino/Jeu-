@@ -103,18 +103,17 @@ class Jeu:
     def start(self):
         self.is_playing = True
         self.gameover = False
-        self.spawn_supermonster()
         self.spawn_monster()
         if jeu.score > 500:
             self.spawn_monster()
             self.spawn_monster()
-
-
-
+        if jeu.score > 1500:
+            self.spawn_supermonster()
 
     def game_over(self):
         #reinitialisation du jeu
         self.les_monstres = pygame.sprite.Group()
+        self.les_supermonstres = pygame.sprite.Group()
         self.player.rect.x = 100
         self.bloc_event.les_blocs = pygame.sprite.Group()
         self.player.health = self.player.max_health
@@ -314,7 +313,7 @@ class Super_Monstre (pygame.sprite.Sprite):
         self.image = pygame.transform.scale(pygame.image.load("super_méchant.png"), (172,264))
         self.rect = self.image.get_rect()
         self.rect.x = 1000 + random.randint(0,200)
-        self.rect.y = 350
+        self.rect.y = 210
         self.vit = random.randint(1,10)
 
     def degats(self, amount):
