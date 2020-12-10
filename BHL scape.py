@@ -420,7 +420,6 @@ class blocEvent:
     def add_percent(self):
         self.percent += self.speed/100
 
-
     def jauge_max(self):
         return self.percent >= 100
 
@@ -470,7 +469,7 @@ class bloc(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.transform.scale(pygame.image.load('brique.png'),(150,300))
         self.rect = self.image.get_rect()
-        self.vit = random. randint(5,10)
+        self.vit = 5
         self.rect.x = 1200
         self.rect.y = 255
         self.bloc_event = bloc_event
@@ -483,6 +482,40 @@ class bloc(pygame.sprite.Sprite):
     def move(self):
         if not self.bloc_event.jeu.check_ifhit(self, self.bloc_event.jeu.les_joueurs) or self.bloc_event.jeu.player.jump:
             self.rect.x -= self.vit
+
+
+        if self.bloc_event.jeu.score >= 100:
+            self.rect.x -= self.vit + 1
+
+        if self.bloc_event.jeu.score >= 200:
+            self.rect.x -= self.vit + 1
+
+        if self.bloc_event.jeu.score >= 300:
+            self.rect.x -= self.vit + 1
+
+        if self.bloc_event.jeu.score >= 400:
+            self.rect.x -= self.vit + 1
+
+        if self.bloc_event.jeu.score >= 500:
+            self.rect.x -= self.vit + 1
+
+        if self.bloc_event.jeu.score >= 600:
+            self.rect.x -= self.vit + 1
+
+        if self.bloc_event.jeu.score >= 700:
+            self.rect.x -= self.vit + 1
+
+        if self.bloc_event.jeu.score >= 800:
+            self.rect.x -= self.vit + 1
+
+        if self.bloc_event.jeu.score >= 900:
+            self.rect.x -= self.vit + 1
+
+        if self.bloc_event.jeu.score >= 1000:
+            self.rect.x -= self.vit + 1
+
+
+
 
     #arrive au bout
         if self.rect.x <= 0:
@@ -589,6 +622,8 @@ while run:
 
 
 
-           
+
+
+
 
 
