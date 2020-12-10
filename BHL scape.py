@@ -104,6 +104,7 @@ class Jeu:
         self.is_playing = True
         self.gameover = False
         self.spawn_monster()
+        self.spawn_supermonster()
         if jeu.score > 500:
             self.spawn_monster()
             self.spawn_monster()
@@ -128,6 +129,8 @@ class Jeu:
         # actualiser la barre de vie du joueur
         self.player.update_health_bar(fenetre)
 
+
+
         #actualiser la barre d'évenements du jeu
         self.bloc_event.update_bar(fenetre)
 
@@ -138,6 +141,7 @@ class Jeu:
             #récupérer les supermonstres
         for supermonstre in self.les_supermonstres:
             supermonstre.move()
+            supermonstre.update_health_bar(fenetre)
 
             # récupérer les projectiles du joueur
         for projectile in jeu.player.all_projectiles:
@@ -203,7 +207,7 @@ class player(pygame.sprite.Sprite):
         self.jump = False
         self.image = pygame.transform.scale(pygame.image.load('Standing.png'), (233, 160))
         self.rect = self.image.get_rect()
-        self.attack = 1
+        self.attack = 10
         self.RunRight = [pygame.transform.scale(pygame.image.load('RR1.png'), (233, 160)),
                     pygame.transform.scale(pygame.image.load('RR2.png'), (233, 160)),
                     pygame.transform.scale(pygame.image.load('RR3.png'), (233, 160)),
@@ -308,7 +312,8 @@ class Super_Monstre (pygame.sprite.Sprite):
     def __init__(self, jeu):
         super().__init__()
         self.jeu = jeu
-        self.health = 20
+        self.health = 100
+        self.max_health = 100
         self.attack = 30
         self.image = pygame.transform.scale(pygame.image.load("super_méchant.png"), (172,264))
         self.rect = self.image.get_rect()
@@ -338,6 +343,11 @@ class Super_Monstre (pygame.sprite.Sprite):
         if self.rect.x <= 0:
             self.rect.x = 1000 + random.randint(300, 500)
             self.vit = random.randint(1, 5)
+
+    def update_health_bar(self, surface):
+       #barre de vie
+       pygame.draw.rect(surface, (60, 63, 60), [self.rect.x + 40, self.rect.y - 20 , self.max_health, 10])
+       pygame.draw.rect(surface, (255, 0, 0), [self.rect.x + 40, self. rect.y - 20 , self.health, 10])
 
 
 
