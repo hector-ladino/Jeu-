@@ -94,6 +94,7 @@ class Jeu:
         self.les_monstres = pygame.sprite.Group()
         #plusieurs super méchants
         self.les_supermonstres = pygame.sprite.Group()
+        self.super_monster_event = SuperMonsterEvent(self)
         #barre d'évenements
         self.bloc_event = blocEvent(self)
         self.pressed = {}
@@ -104,13 +105,6 @@ class Jeu:
     def start(self):
         self.is_playing = True
         self.gameover = False
-        self.spawn_monster()
-        self.spawn_supermonster()
-        if jeu.score > 500:
-            self.spawn_monster()
-            self.spawn_monster()
-        if jeu.score > 1500:
-            self.spawn_supermonster()
 
     def game_over(self):
         #reinitialisation du jeu
@@ -136,6 +130,7 @@ class Jeu:
 
 
         #actualiser la barre d'évenements du jeu
+        self.super_monster_event.update_bar(fenetre)
         self.bloc_event.update_bar(fenetre)
 
             #récuperer les monstre
@@ -309,51 +304,6 @@ class Monstre (pygame.sprite.Sprite):
         if self.jeu.score >= 500:
             self.rect.x -= random.randint(10,20)
 
-# super méchant monstre
-
-class Super_Monstre (pygame.sprite.Sprite):
-    def __init__(self, jeu):
-        super().__init__()
-        self.jeu = jeu
-        self.health = 100
-        self.max_health = 100
-        self.attack = 30
-        self.image = pygame.transform.scale(pygame.image.load("super_méchant.png"), (172,264))
-        self.rect = self.image.get_rect()
-        self.rect.x = 1000 + random.randint(0,200)
-        self.rect.y = 210
-        self.vit = random.randint(1,10)
-
-    def degats(self, amount):
-        #infliger des degats
-        self.health -= amount
-        #voir si le nb de points de vie et plus petit ou égal à 0
-        if self.health <= 0:
-            self.remove()
-
-
-    def remove(self):
-        self.jeu.les_supermonstres.remove(self)
-
-    def move(self):
-        # le dépacement se fait uniquement lorsque le monstre ne touche pas le joueur
-        self.rect.x -= self.vit
-
-        if self.jeu.check_ifhit(self, self.jeu.les_joueurs):
-            self.rect.x = 1000 + random.randint(300, 500)
-            self.vit = random.randint(1, 10)
-            self.jeu.player.damage(self.attack)
-        if self.rect.x <= 0:
-            self.rect.x = 1000 + random.randint(300, 500)
-            self.vit = random.randint(1, 5)
-
-    def update_health_bar(self, surface):
-       #barre de vie
-       pygame.draw.rect(surface, (60, 63, 60), [self.rect.x + 40, self.rect.y - 20 , self.max_health, 10])
-       pygame.draw.rect(surface, (255, 0, 0), [self.rect.x + 40, self. rect.y - 20 , self.health, 10])
-
-
-
 #projectile
 
 class Projectile (pygame.sprite.Sprite):
@@ -399,6 +349,99 @@ class Projectile (pygame.sprite.Sprite):
             self.remove()
 
 
+
+
+# super méchant monstre
+
+class SuperMonsterEvent:
+    #lors du chargement -> créer un compteur
+    def __init__(self, jeu):
+        self.jeu = jeu
+        self.percent = 0
+        self.speed = 100
+
+
+
+    def add_percent(self):
+        self.percent += self.speed/1000
+
+    def jauge_max(self):
+        return self.percent >= 100
+
+
+    def reset_percent(self):
+        self.percent = 0
+
+
+    def lessupermonstres(self):
+        # la jauge au max
+        if self.jauge_max():
+            self.jeu.spawn_supermonster()
+            self.reset_percent()
+
+    def update_bar(self, fenetre):
+
+        #ajouter du pourcentage à la barre
+        self.add_percent()
+
+        #arrivée de blocs
+        self.lessupermonstres()
+
+        #barre noir (en arriere plan)
+        pygame.draw.rect(fenetre, (0, 0, 0), [
+            0,
+            fenetre.get_height() - 40,
+            fenetre.get_width(),
+            20
+        ])
+        #barre(jauge d'event)
+        pygame.draw.rect(fenetre, (255, 0, 0, 0), [
+            0,
+            fenetre.get_height() - 50,
+            (fenetre.get_width() / 100)*self.percent,
+            20
+            ])
+
+class Super_Monstre (pygame.sprite.Sprite):
+    def __init__(self, jeu):
+        super().__init__()
+        self.jeu = jeu
+        self.health = 100
+        self.max_health = 100
+        self.attack = 30
+        self.image = pygame.transform.scale(pygame.image.load("super_méchant.png"), (172,264))
+        self.rect = self.image.get_rect()
+        self.rect.x = 1000 + random.randint(0,200)
+        self.rect.y = 210
+        self.vit = random.randint(1,10)
+
+    def degats(self, amount):
+        #infliger des degats
+        self.health -= amount
+        #voir si le nb de points de vie et plus petit ou égal à 0
+        if self.health <= 0:
+            self.remove()
+
+
+    def remove(self):
+        self.jeu.les_supermonstres.remove(self)
+
+    def move(self):
+        # le dépacement se fait uniquement lorsque le monstre ne touche pas le joueur
+        self.rect.x -= self.vit
+
+        if self.jeu.check_ifhit(self, self.jeu.les_joueurs):
+            self.rect.x = 1000 + random.randint(300, 500)
+            self.vit = random.randint(1, 10)
+            self.jeu.player.damage(self.attack)
+        if self.rect.x <= 0:
+            self.rect.x = 1000 + random.randint(300, 500)
+            self.vit = random.randint(1, 5)
+
+    def update_health_bar(self, surface):
+       #barre de vie
+       pygame.draw.rect(surface, (60, 63, 60), [self.rect.x + 40, self.rect.y - 20 , self.max_health, 10])
+       pygame.draw.rect(surface, (255, 0, 0), [self.rect.x + 40, self. rect.y - 20 , self.health, 10])
 
 
 
@@ -452,7 +495,7 @@ class blocEvent:
             fenetre.get_width(),
             20
         ])
-        #barre rouge (jauge d'event)
+        #barre (jauge d'event)
         pygame.draw.rect(fenetre, (255, 215, 0, 255), [
             0,
             fenetre.get_height() - 40,
@@ -555,9 +598,9 @@ while run:
 
     #gamestarting
     if jeu.is_playing:
-        jeu.score += 1
-        draw_text(fenetre, "Score : " +str(jeu.score),30,600,30)
 
+        draw_text(fenetre, "Score : " +str(jeu.score),30,600,30)
+        jeu.score += 1
         # movement fond
         floor_x_pos -= 1
         mouv_sol()
