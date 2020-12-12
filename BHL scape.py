@@ -97,6 +97,7 @@ class Jeu:
         self.super_monster_event = SuperMonsterEvent(self)
         #barre d'évenements
         self.bloc_event = blocEvent(self)
+        self.heart_event = HeartEvent(self)
         self.pressed = {}
         self.score = 0
         self.topscore = 0
@@ -113,6 +114,7 @@ class Jeu:
         self.les_supermonstres = pygame.sprite.Group()
         self.player.rect.x = 100
         self.bloc_event.les_blocs = pygame.sprite.Group()
+        self.heart_event.all_heart = pygame.sprite.Group()
         self.player.health = self.player.max_health
         self.bloc_event.reset_percent()
         self.score = 0
@@ -133,6 +135,7 @@ class Jeu:
         #actualiser la barre d'évenements du jeu
         self.super_monster_event.update_bar(fenetre)
         self.bloc_event.update_bar(fenetre)
+        self.heart_event.update_bar(fenetre)
 
             #récuperer les monstre
         for monstre in self.les_monstres:
@@ -150,6 +153,10 @@ class Jeu:
         #recup les bloc
         for bloc in self.bloc_event.les_blocs:
             bloc.move()
+
+        #recup les coeur
+        for heart in self.heart_event.all_heart:
+            heart.move()
         # apparition des monstres
         self.les_monstres.draw(fenetre)
         self.les_supermonstres.draw(fenetre)
@@ -157,6 +164,9 @@ class Jeu:
         #apparition des blocs
 
         self.bloc_event.les_blocs.draw(fenetre)
+
+        #apparation des coeurs
+        self.heart_event.all_heart.draw(fenetre)
 
         # commande joueur
 
@@ -256,10 +266,12 @@ class player(pygame.sprite.Sprite):
 
     def move_right(self):
         #joueur ne touche pas un bloc
-        if not self.jeu.check_ifhit(self, self.jeu.bloc_event.les_blocs) or self.jump:
+        if not self.jeu.check_ifhit(self, self.jeu.bloc_event.les_blocs) or self.jump and self.jeu.check_ifhit(self, self.jeu.les_supermonstres):
             self.rect.x += self.vit_x
-        if not self.jeu.check_ifhit(self, self.jeu.les_supermonstres):
-            self.rect.x += self.vit_x
+        if self.health > 100:
+            self.max_health = self.health
+        else:
+            self.max_health = self.max_health
 
     def move_left(self):
         self.rect.x -= self.vit_x
@@ -603,7 +615,89 @@ class bloc(pygame.sprite.Sprite):
 
 
 
+class HeartEvent:
+    #lors du chargement -> créer un compteur
+    def __init__(self, jeu):
+        self.jeu = jeu
+        self.percent = 0
+        self.speed = 100
 
+
+        #groupe de sprite pour stocker les blocs
+        self.all_heart = pygame.sprite.Group()
+
+
+
+    def add_percent(self):
+        self.percent += self.speed/random.randint(500,1000)
+
+
+
+    def jauge_max(self):
+        return self.percent >= 100
+
+
+    def reset_percent(self):
+        self.percent = 0
+
+
+    def heart_arrive(self):
+        self.all_heart.add(heart(self))
+
+    def allheart(self):
+        # la jauge au max
+        if self.jauge_max():
+            self.heart_arrive()
+            self.reset_percent()
+
+    def update_bar(self, fenetre):
+
+        #ajouter du pourcentage à la barre
+        self.add_percent()
+
+        #arrivée de coeurs
+        self.allheart()
+
+        # barre noir (arriere plan)
+        pygame.draw.rect(fenetre, (0, 0, 0), [
+            0,
+            fenetre.get_height() - 40,
+            fenetre.get_width(),
+            20
+        ])
+
+        # barre rouge (jauge d'event)
+        pygame.draw.rect(fenetre, (255, 215, 0, 255), [
+            0,
+            fenetre.get_height() - 40,
+            (fenetre.get_width() / 100) * self.percent,
+            20
+        ])
+
+
+class heart(pygame.sprite.Sprite):
+
+    def __init__(self, heart_event):
+        super().__init__()
+        self.image = pygame.transform.scale(pygame.image.load('heart.png'),(47,47))
+        self.rect = self.image.get_rect()
+        self.vit = 5
+        self.rect.x = 1200
+        self.rect.y = 115
+        self.heart_event = heart_event
+
+    def remove(self):
+        # suppression de du bloc
+        self.heart_event.all_heart.remove(self)
+
+
+    def move(self):
+        if not self.heart_event.jeu.check_ifhit(self, self.heart_event.jeu.les_joueurs) or self.heart_event.jeu.player.jump:
+            self.rect.x -= self.vit
+        if self.heart_event.jeu.check_ifhit(self, self.heart_event.jeu.les_joueurs):
+            self.heart_event.jeu\
+                .player.health += 50
+            self.remove()
 
 #instances
 jeu = Jeu()
