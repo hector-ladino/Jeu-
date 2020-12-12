@@ -105,7 +105,8 @@ class Jeu:
     def start(self):
         self.is_playing = True
         self.gameover = False
-
+        self.spawn_monster()
+        self.spawn_monster()
     def game_over(self):
         #reinitialisation du jeu
         self.les_monstres = pygame.sprite.Group()
@@ -202,7 +203,7 @@ class player(pygame.sprite.Sprite):
         self.vit_x = 10
         self.vit_y = 10
         self.all_projectiles = pygame.sprite.Group()
-        self.jumpHeight = 10
+        self.jumpHeight = 5
         self.jump = False
         self.image = pygame.transform.scale(pygame.image.load('Standing.png'), (233, 160))
         self.rect = self.image.get_rect()
@@ -257,6 +258,8 @@ class player(pygame.sprite.Sprite):
         #joueur ne touche pas un bloc
         if not self.jeu.check_ifhit(self, self.jeu.bloc_event.les_blocs) or self.jump:
             self.rect.x += self.vit_x
+        if not self.jeu.check_ifhit(self, self.jeu.les_supermonstres):
+            self.rect.x += self.vit_x
 
     def move_left(self):
         self.rect.x -= self.vit_x
@@ -273,7 +276,7 @@ class Monstre (pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = 1000 + random.randint(0,200)
         self.rect.y = 350
-        self.vit = random.randint(1,10)
+        self.vit = random.randint(1,5)
 
     def degats(self, amount):
         #infliger des degats
@@ -298,11 +301,11 @@ class Monstre (pygame.sprite.Sprite):
             self.rect.x = 1000 + random.randint(300, 500)
             self.vit = random.randint(1, 5)
 
-        if self.jeu.score >= 200:
-          self.rect.x -= random.randint(5,10)
-
         if self.jeu.score >= 500:
-            self.rect.x -= random.randint(10,20)
+            self.rect.x -= random.randint(3,7)
+
+        if self.jeu.score >= 1000:
+            self.rect.x -= random.randint(5,9)
 
 #projectile
 
@@ -363,7 +366,7 @@ class SuperMonsterEvent:
 
 
     def add_percent(self):
-        self.percent += self.speed/1000
+        self.percent += self.speed/500
 
     def jauge_max(self):
         return self.percent >= 100
@@ -387,18 +390,19 @@ class SuperMonsterEvent:
         #arrivée de blocs
         self.lessupermonstres()
 
-        #barre noir (en arriere plan)
+        #barre noir (arriere plan)
         pygame.draw.rect(fenetre, (0, 0, 0), [
             0,
             fenetre.get_height() - 40,
             fenetre.get_width(),
             20
         ])
-        #barre(jauge d'event)
-        pygame.draw.rect(fenetre, (255, 0, 0, 0), [
+
+        #barre rouge (jauge d'event)
+        pygame.draw.rect(fenetre, (255, 0, 0), [
             0,
-            fenetre.get_height() - 50,
-            (fenetre.get_width() / 100)*self.percent,
+            fenetre.get_height() - 40,
+            (fenetre.get_width()/100)*self.percent,
             20
             ])
 
@@ -408,12 +412,12 @@ class Super_Monstre (pygame.sprite.Sprite):
         self.jeu = jeu
         self.health = 100
         self.max_health = 100
-        self.attack = 30
+        self.attack = 3
         self.image = pygame.transform.scale(pygame.image.load("super_méchant.png"), (172,264))
         self.rect = self.image.get_rect()
         self.rect.x = 1000 + random.randint(0,200)
         self.rect.y = 210
-        self.vit = random.randint(1,10)
+        self.vit = 5
 
     def degats(self, amount):
         #infliger des degats
@@ -431,12 +435,10 @@ class Super_Monstre (pygame.sprite.Sprite):
         self.rect.x -= self.vit
 
         if self.jeu.check_ifhit(self, self.jeu.les_joueurs):
-            self.rect.x = 1000 + random.randint(300, 500)
             self.vit = random.randint(1, 10)
             self.jeu.player.damage(self.attack)
-        if self.rect.x <= 0:
-            self.rect.x = 1000 + random.randint(300, 500)
-            self.vit = random.randint(1, 5)
+        if jeu.score >= 1500:
+            self.rect.x -= 5
 
     def update_health_bar(self, surface):
        #barre de vie
@@ -463,6 +465,37 @@ class blocEvent:
     def add_percent(self):
         self.percent += self.speed/100
 
+        if self.jeu.score >= 300:
+            self.percent += 0.3
+
+        if self.jeu.score >= 600:
+            self.percent += 0.3
+
+        if self.jeu.score >= 900:
+            self.percent += 0.3
+
+        if self.jeu.score >= 1200:
+            self.percent += 0.3
+
+        if self.jeu.score >= 1500:
+            self.percent += 0.3
+
+        if self.jeu.score >= 1800:
+            self.percent += 0.3
+        if self.jeu.score >= 2100:
+            self.percent += 0.3
+
+        if self.jeu.score >= 2400:
+            self.percent += 0.3
+
+        if self.jeu.score >= 2700:
+            self.percent -= 0.3
+
+        if self.jeu.score >= 3000:
+            self.percent -= 0.3
+
+
+
     def jauge_max(self):
         return self.percent >= 100
 
@@ -488,23 +521,22 @@ class blocEvent:
         #arrivée de blocs
         self.lesblocs()
 
-        #barre noir (en arriere plan)
+        # barre noir (arriere plan)
         pygame.draw.rect(fenetre, (0, 0, 0), [
             0,
             fenetre.get_height() - 40,
             fenetre.get_width(),
             20
         ])
-        #barre (jauge d'event)
+
+        # barre rouge (jauge d'event)
         pygame.draw.rect(fenetre, (255, 215, 0, 255), [
             0,
             fenetre.get_height() - 40,
-            (fenetre.get_width() / 100)*self.percent,
+            (fenetre.get_width() / 100) * self.percent,
             20
-            ])
+        ])
 
-
-#bloc
 
 class bloc(pygame.sprite.Sprite):
 
@@ -527,35 +559,35 @@ class bloc(pygame.sprite.Sprite):
             self.rect.x -= self.vit
 
 
-        if self.bloc_event.jeu.score >= 100:
-            self.rect.x -= self.vit + 1
-
-        if self.bloc_event.jeu.score >= 200:
-            self.rect.x -= self.vit + 1
-
         if self.bloc_event.jeu.score >= 300:
-            self.rect.x -= self.vit + 1
-
-        if self.bloc_event.jeu.score >= 400:
-            self.rect.x -= self.vit + 1
-
-        if self.bloc_event.jeu.score >= 500:
-            self.rect.x -= self.vit + 1
+            self.rect.x -= 1.5
 
         if self.bloc_event.jeu.score >= 600:
-            self.rect.x -= self.vit + 1
-
-        if self.bloc_event.jeu.score >= 700:
-            self.rect.x -= self.vit + 1
-
-        if self.bloc_event.jeu.score >= 800:
-            self.rect.x -= self.vit + 1
+            self.rect.x -= 1.5
 
         if self.bloc_event.jeu.score >= 900:
-            self.rect.x -= self.vit + 1
+            self.rect.x -= 1.5
 
-        if self.bloc_event.jeu.score >= 1000:
-            self.rect.x -= self.vit + 1
+        if self.bloc_event.jeu.score >= 1200:
+            self.rect.x -= 1.5
+
+        if self.bloc_event.jeu.score >= 1500:
+            self.rect.x -= 1.5
+
+        if self.bloc_event.jeu.score >= 1800:
+            self.rect.x -= 1.5
+
+        if self.bloc_event.jeu.score >= 2100:
+            self.rect.x -= 1.5
+
+        if self.bloc_event.jeu.score >= 2400:
+            self.rect.x -= 1.5
+
+        if self.bloc_event.jeu.score >= 2700:
+            self.rect.x -= 1.5
+
+        if self.bloc_event.jeu.score >= 13000:
+            self.rect.x -= 1.5
 
 
 
