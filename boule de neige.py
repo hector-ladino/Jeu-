@@ -44,17 +44,3 @@ class bouledeneige(object):
                 bloc_list = []
                 SPAWNBLOC = pygame.USEREVENT
                 pygame.time.set_timer(SPAWNBLOC, 4000)
-
-
-                def move_bloc(blocs):
-                    for bloc in blocs:
-                        bloc.centerx -= 5
-                    return blocs
-
-                def draw_bloc(blocs):
-                    for bloc in blocs:
-                        fenetre.blit(bloc_surface, bloc)
-                        bloc_list = move_bloc(bloc_list)
-                        draw_bloc(bloc_list)
-                        if event.type == SPAWNBLOC:
-                            bloc_list.append(create_bloc())
