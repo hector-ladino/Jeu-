@@ -286,7 +286,7 @@ class Monstre (pygame.sprite.Sprite):
         self.attack = 30
         self.image = pygame.transform.scale(pygame.image.load("méchant.png"), (58, 96))
         self.rect = self.image.get_rect()
-        self.rect.x = 1000 + random.randint(0,200)
+        self.rect.x = 1000 + random.randint(200,300)
         self.rect.y = 350
         self.vit = random.randint(1,5)
 
@@ -427,7 +427,7 @@ class Super_Monstre (pygame.sprite.Sprite):
         self.attack = 3
         self.image = pygame.transform.scale(pygame.image.load("super_méchant.png"), (172,264))
         self.rect = self.image.get_rect()
-        self.rect.x = 1000 + random.randint(0,200)
+        self.rect.x = 1000 + random.randint(200,300)
         self.rect.y = 210
         self.vit = 5
 
