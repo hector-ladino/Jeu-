@@ -259,7 +259,7 @@ class player(pygame.sprite.Sprite):
         self.jump = False
         self.image = pygame.transform.scale(pygame.image.load('Standing.png'), (233, 160))
         self.rect = self.image.get_rect()
-        self.attack = 5
+        self.attack = 9
         self.RunRight = [pygame.transform.scale(pygame.image.load('RR1.png'), (233, 160)),
                     pygame.transform.scale(pygame.image.load('RR2.png'), (233, 160)),
                     pygame.transform.scale(pygame.image.load('RR3.png'), (233, 160)),
@@ -495,9 +495,6 @@ class blocEvent:
     def add_percent(self):
         self.percent += self.speed/100
 
-        if self.jeu.score >= 300:
-            self.percent += 0.3
-
         if self.jeu.score >= 600:
             self.percent += 0.3
 
@@ -580,9 +577,6 @@ class bloc(pygame.sprite.Sprite):
     def move(self):
         if not self.bloc_event.jeu.check_ifhit(self, self.bloc_event.jeu.les_joueurs) or self.bloc_event.jeu.player.jump:
             self.rect.x -= self.vit
-
-        if self.bloc_event.jeu.score >= 300:
-            self.rect.x -= 1.5
 
         if self.bloc_event.jeu.score >= 600:
             self.rect.x -= 1.5
