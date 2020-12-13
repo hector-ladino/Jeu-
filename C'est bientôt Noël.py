@@ -129,6 +129,9 @@ class Jeu:
         self.how_to_play = False
         self.spawn_monster()
         self.spawn_monster()
+        self.spawn_monster()
+        self.spawn_monster()
+
         gamesound.play(-1)
 
     def game_over(self):
@@ -259,7 +262,7 @@ class player(pygame.sprite.Sprite):
         self.jump = False
         self.image = pygame.transform.scale(pygame.image.load('Standing.png'), (233, 160))
         self.rect = self.image.get_rect()
-        self.attack = 9
+        self.attack = 8
         self.RunRight = [pygame.transform.scale(pygame.image.load('RR1.png'), (233, 160)),
                     pygame.transform.scale(pygame.image.load('RR2.png'), (233, 160)),
                     pygame.transform.scale(pygame.image.load('RR3.png'), (233, 160)),
@@ -347,6 +350,14 @@ class Monstre (pygame.sprite.Sprite):
         if self.jeu.score >= 1000:
             self.rect.x -= random.randint(5,9)
 
+        #si la barre d'event du super monstre est chargé a son maximum
+        if self.jeu.super_monster_event.jauge_max():
+            #retirer du jeu
+            self.jeu.les_monstres.remove(self)
+
+            # arrivée de blocs
+            self.jeu.super_monster_event.lessupermonstres()
+
 #projectile
 class Projectile (pygame.sprite.Sprite):
     def __init__(self, player):
@@ -395,6 +406,7 @@ class SuperMonsterEvent:
         self.jeu = jeu
         self.percent = 0
         self.speed = 100
+        self.supermonstre_mode = False
 
     def add_percent(self):
         self.percent += self.speed/1000
@@ -410,9 +422,9 @@ class SuperMonsterEvent:
 
     def lessupermonstres(self):
         # la jauge au max
-        if self.jauge_max():
+        if self.jauge_max() and len(self.jeu.les_monstres) == 0:
             self.jeu.spawn_supermonster()
-            self.reset_percent()
+            self.supermonstre_mode = True # activer l'événement
             superméchantsound.play()
             gamesound.stop()
 
@@ -421,8 +433,6 @@ class SuperMonsterEvent:
         #ajouter du pourcentage à la barre
         self.add_percent()
 
-        #arrivée de blocs
-        self.lessupermonstres()
 
         #barre noir (arriere plan)
         pygame.draw.rect(fenetre, (0, 0, 0), [
@@ -460,9 +470,23 @@ class Super_Monstre (pygame.sprite.Sprite):
         #voir si le nb de points de vie et plus petit ou égal à 0
         if self.health <= 0:
             self.remove()
+        if len(self.jeu.les_supermonstres) == 0:
+            self.jeu.super_monster_event.reset_percent()
+            self.jeu.super_monster_event.supermonstre_mode = False
 
     def remove(self):
         self.jeu.les_supermonstres.remove(self)
+
+        if len(self.jeu.les_supermonstres) == 0:
+            # remettre la barre a 0
+            self.jeu.super_monster_event.reset_percent()
+            #apparaitre les monstres
+            self.jeu.spawn_monster()
+            self.jeu.spawn_monster()
+            self.jeu.spawn_monster()
+            self.jeu.spawn_monster()
+
+
         superméchantsound.stop()
         gamesound.play()
 
@@ -535,6 +559,7 @@ class blocEvent:
         if self.jauge_max():
             self.bloc_arrive()
             self.reset_percent()
+
 
     def update_bar(self, fenetre):
         #ajouter du pourcentage à la barre
