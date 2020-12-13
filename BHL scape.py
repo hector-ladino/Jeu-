@@ -95,13 +95,15 @@ class Jeu:
         #plusieurs super méchants
         self.les_supermonstres = pygame.sprite.Group()
         self.super_monster_event = SuperMonsterEvent(self)
-        #barre d'évenements
+        #barres d'évenements
         self.bloc_event = blocEvent(self)
         self.heart_event = HeartEvent(self)
+        self.super_monster_event = SuperMonsterEvent(self)
         self.pressed = {}
         self.score = 0
         self.topscore = 0
         self.yourscore = 0
+        self.walkCount = 0
 
     def start(self):
         self.is_playing = True
@@ -117,6 +119,8 @@ class Jeu:
         self.heart_event.all_heart = pygame.sprite.Group()
         self.player.health = self.player.max_health
         self.bloc_event.reset_percent()
+        self.super_monster_event.reset_percent()
+        self.heart_event.reset_percent()
         self.score = 0
         self.gameover = True
         self.is_playing = False
@@ -125,7 +129,19 @@ class Jeu:
 
 
     def actualiser(self, fenetre):
-        fenetre.blit(self.player.image, self.player.rect)
+
+        if self.walkCount + 1 >= 33:
+            self.walkCount = 0
+
+        if self.player.left:
+            fenetre.blit(self.player.RunLeft[self.walkCount//3], self.player.rect)
+            self.walkCount -= 1
+
+        elif self.player.right:
+            fenetre.blit(self.player.RunRight[self.walkCount//3], self.player.rect)
+            self.walkCount += 1
+        else:
+            fenetre.blit(self.player.image, self.player.rect)
 
         # actualiser la barre de vie du joueur
         self.player.update_health_bar(fenetre)
@@ -175,8 +191,14 @@ class Jeu:
         if self.pressed.get(pygame.K_RIGHT) and self.player.rect.x < 1200 - self.player.width - self.player.vit_x:
             self.player.move_right()
 
+        else:
+            self.player.right = False
+            self.player.lef = False
+            self.walkCount = 0
+
         if self.player.jump is False and self.pressed.get(pygame.K_UP):
             self.player.jump = True
+
 
         if self.player.jump is True:
             if not self.check_ifhit(self.player, self.bloc_event.les_blocs):
@@ -242,6 +264,8 @@ class player(pygame.sprite.Sprite):
                    pygame.transform.scale(pygame.image.load('RL11.png'), (233, 160))]
         self.rect.x = 100
         self.rect.y = 300
+        self.left = False
+        self.right = False
 
     def lancer_projectile(self):
         self.all_projectiles.add(Projectile(self))
@@ -273,8 +297,13 @@ class player(pygame.sprite.Sprite):
         else:
             self.max_health = self.max_health
 
+        self.right = True
+        self.left = False
+
     def move_left(self):
         self.rect.x -= self.vit_x
+        self.left = True
+        self.right = False
 
 #méchant monstre
 
@@ -709,7 +738,7 @@ run = True
 while run:
 
     # fps
-    fps.tick(30)
+    fps.tick(33)
 
     #fond
     dupli_fond()
