@@ -97,6 +97,7 @@ def draw_text(surface,text,size,x,y):
  #class qui représente le jeu
 class Jeu:
     def __init__(self):
+        self.how_to_play = False
         #jeu start ou non
         self.is_playing = False
         #fin du jeu
@@ -119,19 +120,20 @@ class Jeu:
         self.topscore = 0
         self.yourscore = 0
         self.walkCount = 0
-        self.how_to_play = False
 
 
     def howtoplay(self):
         self.how_to_play = True
-        fenetre.fill(white)
+        self.accueil = False
 
     def start(self):
+        self.accueil = False
         self.is_playing = True
         self.gameover = False
         self.how_to_play = False
         self.spawn_monster()
         self.spawn_monster()
+        gamesound.play(-1)
     def game_over(self):
         #reinitialisation du jeu
         self.les_monstres = pygame.sprite.Group()
@@ -148,6 +150,7 @@ class Jeu:
         self.is_playing = False
         self.how_to_play = False
         gameoversound.play()
+        superméchantsound.stop()
 
 
 
@@ -158,11 +161,12 @@ class Jeu:
 
         if self.player.left:
             fenetre.blit(self.player.RunLeft[self.walkCount//3], self.player.rect)
-            self.walkCount -= 1
+            self.walkCount += 1
 
         elif self.player.right:
             fenetre.blit(self.player.RunRight[self.walkCount//3], self.player.rect)
             self.walkCount += 1
+
         else:
             fenetre.blit(self.player.image, self.player.rect)
 
@@ -211,17 +215,25 @@ class Jeu:
         # commande joueur
 
         if self.pressed.get(pygame.K_LEFT) and self.player.rect.x > self.player.vit_x:
-            self.player.move_left()
-        if self.pressed.get(pygame.K_RIGHT) and self.player.rect.x < 1200 - self.player.width - self.player.vit_x:
-            self.player.move_right()
-
-        else:
+            self.player.rect.x -= self.player.vit_x
             self.player.right = False
-            self.player.lef = False
-            self.walkCount = 0
+            self.player.left = True
+        if self.pressed.get(pygame.K_RIGHT) and self.player.rect.x < 1200 - self.player.width - self.player.vit_x:
+            self.player.right = True
+            self.player.left = False
+            # joueur ne touche pas un bloc
+            if not self.check_ifhit(self.player, self.bloc_event.les_blocs) or self.player.jump and self.check_ifhit(self.player, self.les_supermonstres):
+                self.player.rect.x += self.player.vit_x
+
+            if self.player.health > 100:
+                self.player.max_health = self.player.health
+            else:
+                self.player.max_health = self.player.max_health
+
 
         if self.player.jump is False and self.pressed.get(pygame.K_UP):
             self.player.jump = True
+
 
 
         if self.player.jump is True:
@@ -311,23 +323,6 @@ class player(pygame.sprite.Sprite):
        pygame.draw.rect(surface, (60, 63, 60), [self.rect.x + 45, self.rect.y -20, self.max_health, 10])
        pygame.draw.rect(surface, (111, 210, 46), [self.rect.x + 45, self. rect.y - 20, self.health, 10])
 
-
-    def move_right(self):
-        #joueur ne touche pas un bloc
-        if not self.jeu.check_ifhit(self, self.jeu.bloc_event.les_blocs) or self.jump and self.jeu.check_ifhit(self, self.jeu.les_supermonstres):
-            self.rect.x += self.vit_x
-        if self.health > 100:
-            self.max_health = self.health
-        else:
-            self.max_health = self.max_health
-
-        self.right = True
-        self.left = False
-
-    def move_left(self):
-        self.rect.x -= self.vit_x
-        self.left = True
-        self.right = False
 
 #méchant monstre
 
@@ -433,6 +428,9 @@ class SuperMonsterEvent:
     def add_percent(self):
         self.percent += self.speed/500
 
+        if self.jeu.score > 2000:
+            self.percent += self.speed / 1000
+
     def jauge_max(self):
         return self.percent >= 100
 
@@ -462,7 +460,7 @@ class SuperMonsterEvent:
         #barre noir (arriere plan)
         pygame.draw.rect(fenetre, (0, 0, 0), [
             0,
-            fenetre.get_height() - 40,
+            fenetre.get_height(),
             fenetre.get_width(),
             20
         ])
@@ -470,7 +468,7 @@ class SuperMonsterEvent:
         #barre rouge (jauge d'event)
         pygame.draw.rect(fenetre, (255, 0, 0), [
             0,
-            fenetre.get_height() - 40,
+            fenetre.get_height() ,
             (fenetre.get_width()/100)*self.percent,
             20
             ])
@@ -481,7 +479,7 @@ class Super_Monstre (pygame.sprite.Sprite):
         self.jeu = jeu
         self.health = 100
         self.max_health = 100
-        self.attack = 3
+        self.attack = 10
         self.image = pygame.transform.scale(pygame.image.load("super_méchant.png"), (172,264))
         self.rect = self.image.get_rect()
         self.rect.x = 1000 + random.randint(200,300)
@@ -595,7 +593,7 @@ class blocEvent:
         # barre noir (arriere plan)
         pygame.draw.rect(fenetre, (0, 0, 0), [
             0,
-            fenetre.get_height() - 40,
+            fenetre.get_height(),
             fenetre.get_width(),
             20
         ])
@@ -603,7 +601,7 @@ class blocEvent:
         # barre rouge (jauge d'event)
         pygame.draw.rect(fenetre, (255, 215, 0, 255), [
             0,
-            fenetre.get_height() - 40,
+            fenetre.get_height(),
             (fenetre.get_width() / 100) * self.percent,
             20
         ])
@@ -657,7 +655,7 @@ class bloc(pygame.sprite.Sprite):
         if self.bloc_event.jeu.score >= 2700:
             self.rect.x -= 1.5
 
-        if self.bloc_event.jeu.score >= 13000:
+        if self.bloc_event.jeu.score >= 3000:
             self.rect.x -= 1.5
 
 
@@ -720,7 +718,7 @@ class HeartEvent:
         # barre noir (arriere plan)
         pygame.draw.rect(fenetre, (0, 0, 0), [
             0,
-            fenetre.get_height() - 40,
+            fenetre.get_height(),
             fenetre.get_width(),
             20
         ])
@@ -728,7 +726,7 @@ class HeartEvent:
         # barre rouge (jauge d'event)
         pygame.draw.rect(fenetre, (255, 215, 0, 255), [
             0,
-            fenetre.get_height() - 40,
+            fenetre.get_height(),
             (fenetre.get_width() / 100) * self.percent,
             20
         ])
@@ -787,7 +785,38 @@ while run:
         draw_text(fenetre, "Score : " +str(jeu.score),30,600,30)
         jeu.score += 1
         # movement fond
-        floor_x_pos -= 1
+        floor_x_pos -= 5
+
+        if jeu.score >= 300:
+            floor_x_pos -= 1.5
+
+        if jeu.score >= 600:
+            floor_x_pos -= 1.5
+
+        if jeu.score >= 900:
+            floor_x_pos -= 1.5
+
+        if jeu.score >= 1200:
+            floor_x_pos -= 1.5
+
+        if jeu.score >= 1500:
+            floor_x_pos -= 1.5
+
+        if jeu.score >= 1800:
+            floor_x_pos -= 1.5
+
+        if jeu.score >= 2100:
+            floor_x_pos -= 1.5
+
+        if jeu.score >= 2400:
+            floor_x_pos -= 1.5
+
+        if jeu.score >= 2700:
+            floor_x_pos -= 1.5
+
+        if jeu.score >= 3000:
+            floor_x_pos -= 1.5
+
         mouv_sol()
         if floor_x_pos <= -600:
             floor_x_pos = 0
@@ -806,6 +835,7 @@ while run:
         fenetre.fill(white)
         fenetre.blit(ecran_htp, ecran_htp_rect)
         fenetre.blit(play_bouton, play_bouton_rect)
+
 
 
     if jeu.gameover:
@@ -847,11 +877,9 @@ while run:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if play_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton start
                 jeu.start()
-                gamesound.play(-1)
 
             if howtoplay_bouton_rect.collidepoint(event.pos):
                 jeu.howtoplay()
-
 
             if tryagain_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton try again
                 gameoversound.stop()
