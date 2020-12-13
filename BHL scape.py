@@ -18,7 +18,9 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 
 #sound
+gamesound = pygame.mixer.Sound("rock-your-heart-out.mp3")
 gameoversound = pygame.mixer.Sound("gameover.mp3")
+superméchantsound = pygame.mixer.Sound("baddiesound.mp3")
 
 #création d'un écran start
 banner = pygame.transform.scale(pygame.image.load('noel.png'), (850,320))
@@ -161,6 +163,7 @@ class Jeu:
         self.les_monstres.draw(fenetre)
         self.les_supermonstres.draw(fenetre)
 
+
         #apparition des blocs
 
         self.bloc_event.les_blocs.draw(fenetre)
@@ -254,7 +257,7 @@ class player(pygame.sprite.Sprite):
                 jeu.topscore = jeu.score
             if jeu.score > 0:
                 jeu.yourscore = jeu.score
-            pygame.mixer.music.stop()
+            gamesound.stop()
             self.jeu.game_over() #si plus de vie
 
 
@@ -393,6 +396,9 @@ class SuperMonsterEvent:
         if self.jauge_max():
             self.jeu.spawn_supermonster()
             self.reset_percent()
+            superméchantsound.play()
+            gamesound.stop()
+
 
     def update_bar(self, fenetre):
 
@@ -401,6 +407,7 @@ class SuperMonsterEvent:
 
         #arrivée de blocs
         self.lessupermonstres()
+
 
         #barre noir (arriere plan)
         pygame.draw.rect(fenetre, (0, 0, 0), [
@@ -441,6 +448,8 @@ class Super_Monstre (pygame.sprite.Sprite):
 
     def remove(self):
         self.jeu.les_supermonstres.remove(self)
+        superméchantsound.stop()
+        gamesound.play()
 
     def move(self):
         # le dépacement se fait uniquement lorsque le monstre ne touche pas le joueur
@@ -782,8 +791,7 @@ while run:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if play_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton start
                 jeu.start()
-                pygame.mixer.music.load("rock-your-heart-out.mp3")
-                pygame.mixer.music.play(-1, 0.0)
+                gamesound.play(-1)
 
             if tryagain_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton try again
                 gameoversound.stop()
