@@ -129,8 +129,7 @@ class Jeu:
         self.how_to_play = False
         self.spawn_monster()
         self.spawn_monster()
-        self.spawn_monster()
-        self.spawn_monster()
+
 
         gamesound.play(-1)
 
