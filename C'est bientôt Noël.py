@@ -259,7 +259,7 @@ class player(pygame.sprite.Sprite):
         self.jump = False
         self.image = pygame.transform.scale(pygame.image.load('Standing.png'), (233, 160))
         self.rect = self.image.get_rect()
-        self.attack = 10
+        self.attack = 5
         self.RunRight = [pygame.transform.scale(pygame.image.load('RR1.png'), (233, 160)),
                     pygame.transform.scale(pygame.image.load('RR2.png'), (233, 160)),
                     pygame.transform.scale(pygame.image.load('RR3.png'), (233, 160)),
@@ -397,7 +397,7 @@ class SuperMonsterEvent:
         self.speed = 100
 
     def add_percent(self):
-        self.percent += self.speed/500
+        self.percent += self.speed/1000
 
         if self.jeu.score > 2000:
             self.percent += self.speed / 1000
