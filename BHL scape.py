@@ -86,8 +86,9 @@ def dupli_fond():
     fenetre.blit(fond,(fond_x_pos+600,0))
 
 #score
-font_name =pygame.font.match_font("04B_19.ttf",40)
+
 def draw_text(surface,text,size,x,y):
+    font_name = pygame.font.match_font("04B_19.ttf", 40)
     font = pygame.font.Font(font_name,size)
     text_surface = font.render(text,True, (0,0,0))
     text_rect = text_surface.get_rect()
@@ -221,6 +222,7 @@ class Jeu:
         if self.pressed.get(pygame.K_RIGHT) and self.player.rect.x < 1200 - self.player.width - self.player.vit_x:
             self.player.right = True
             self.player.left = False
+
             # joueur ne touche pas un bloc
             if not self.check_ifhit(self.player, self.bloc_event.les_blocs) or self.player.jump and self.check_ifhit(self.player, self.les_supermonstres):
                 self.player.rect.x += self.player.vit_x
@@ -615,7 +617,7 @@ class bloc(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.vit = 5
         self.rect.x = 1200
-        self.rect.y = 255
+        self.rect.y = 270
         self.bloc_event = bloc_event
 
     def remove(self):
