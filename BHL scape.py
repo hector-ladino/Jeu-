@@ -22,23 +22,36 @@ gamesound = pygame.mixer.Sound("rock-your-heart-out.mp3")
 gameoversound = pygame.mixer.Sound("gameover.mp3")
 superméchantsound = pygame.mixer.Sound("baddiesound.mp3")
 
-#création d'un écran start
-banner = pygame.transform.scale(pygame.image.load('noel.png'), (850,320))
+
+#création d'un écran de départ
+texte = pygame.transform.scale(pygame.image.load("Histoire .png"), (1000, 250))
+texte_rect = texte.get_rect()
+texte_rect.x = math.ceil(fenetre.get_width()/12.5)
+texte_rect.y = math.ceil(fenetre.get_height()/2.75)
+
+banner = pygame.transform.scale(pygame.image.load('noel.png'), (600, 300))
 banner_rect = banner.get_rect()
-banner_rect.x = math.ceil(fenetre.get_width()/8)
-banner_rect.y = math.ceil(fenetre.get_height()/1000)
+banner_rect.x = math.ceil(fenetre.get_width()/4)
+banner_rect.y = math.ceil(fenetre.get_height() - 650)
 
 #bouton pour lancer partie
 play_bouton = pygame.transform.scale(pygame.image.load('start.png'), (200, 60))
 play_bouton_rect = play_bouton.get_rect()
-play_bouton_rect.x = math.ceil(fenetre.get_width()/2.45)
+play_bouton_rect.x = math.ceil(fenetre.get_width()/3.73)
 play_bouton_rect.y = math.ceil(fenetre.get_height()/1.2)
 
+#bouton how to play
+howtoplay_bouton = pygame.transform.scale(pygame.image.load('howtoplay.png'), (200, 60))
+howtoplay_bouton_rect = howtoplay_bouton.get_rect()
+howtoplay_bouton_rect.x = math.ceil(fenetre.get_width()/1.8)
+howtoplay_bouton_rect.y = math.ceil(fenetre.get_height()/1.2)
+
+
 #ecran "how to play"
-ecran_htp = pygame.transform.scale(pygame.image.load("écran_how_to_play.png"), (340, 230))
+ecran_htp = pygame.transform.scale(pygame.image.load("écran_how_to_play.png"), (550, 291))
 ecran_htp_rect = ecran_htp.get_rect()
-ecran_htp_rect.x = math.ceil(fenetre.get_width()/2.8)
-ecran_htp_rect.y = math.ceil(fenetre.get_height()/2.6)
+ecran_htp_rect.x = math.ceil(fenetre.get_width()/3.5)
+ecran_htp_rect.y = math.ceil(fenetre.get_height()/6)
 
 #ecran game over
 embleme = pygame.image.load('game over.png')
@@ -106,10 +119,17 @@ class Jeu:
         self.topscore = 0
         self.yourscore = 0
         self.walkCount = 0
+        self.how_to_play = False
+
+
+    def howtoplay(self):
+        self.how_to_play = True
+        fenetre.fill(white)
 
     def start(self):
         self.is_playing = True
         self.gameover = False
+        self.how_to_play = False
         self.spawn_monster()
         self.spawn_monster()
     def game_over(self):
@@ -126,6 +146,7 @@ class Jeu:
         self.score = 0
         self.gameover = True
         self.is_playing = False
+        self.how_to_play = False
         gameoversound.play()
 
 
@@ -778,7 +799,13 @@ while run:
         fenetre.fill(white)
         fenetre.blit(banner, banner_rect)
         fenetre.blit(play_bouton, play_bouton_rect)
+        fenetre.blit(howtoplay_bouton, howtoplay_bouton_rect)
+        fenetre.blit(texte, texte_rect)
+
+    if jeu.how_to_play:
+        fenetre.fill(white)
         fenetre.blit(ecran_htp, ecran_htp_rect)
+        fenetre.blit(play_bouton, play_bouton_rect)
 
 
     if jeu.gameover:
@@ -822,9 +849,18 @@ while run:
                 jeu.start()
                 gamesound.play(-1)
 
+            if howtoplay_bouton_rect.collidepoint(event.pos):
+                jeu.howtoplay()
+
+
             if tryagain_bouton_rect.collidepoint(event.pos):  # vérifier si la souris touche le bouton try again
                 gameoversound.stop()
                 jeu.start()
+
+
+
+
+
 
 
 
